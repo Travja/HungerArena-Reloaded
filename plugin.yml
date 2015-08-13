@@ -1,12 +1,13 @@
 name: HungerArena
 main: me.Travja.HungerArena.Main
-version: 1.5B
+version: 2.0-Beta
 description: A lightweight and powerful plugin to help with playing The Hunger Games!
-softdepend: [Vault, WorldEdit]
+depend: [WorldEdit]
+softdepend: [Vault]
 commands:
-  Ha:
+  ha:
     description: Makes you join a game or start the game!
-  StartPoint:
+  startpoint:
     description: Sets the starting point of a tribute.
-  Sponsor:
+  sponsor:
     description: Sponsors a Tribute
