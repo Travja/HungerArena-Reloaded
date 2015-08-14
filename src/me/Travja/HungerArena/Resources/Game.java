@@ -2,6 +2,7 @@ package me.Travja.HungerArena.Resources;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,15 +13,23 @@ import me.Travja.HungerArena.CM;
 import me.Travja.HungerArena.Main;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 
-public class Game {
+public class Game implements Listener{
 
 	public enum State{
 		WAITING, STARTING, INGAME, RESTARTING, DISABLED
@@ -32,6 +41,8 @@ public class Game {
 	ArrayList<UUID> spectators;
 	boolean global;
 	boolean grace;
+	int graceTime;
+	int time = 0;
 
 	Location min;
 	Location max;
@@ -50,7 +61,14 @@ public class Game {
 		this.spectators = new ArrayList<UUID>();
 		this.global = Main.config.getBoolean("broadcastAll");
 		this.grace = true;
+		save();
 		load();
+		
+		new BukkitRunnable() {
+			public void run() {
+				update();
+			}
+		}.runTaskTimer(Main.self, 20L, 20L);
 	}
 
 	public Game(String name, Location min, Location max) {
@@ -63,6 +81,12 @@ public class Game {
 		this.global = Main.config.getBoolean("broadcastAll");
 		this.grace = true;
 		save();
+		load();
+		new BukkitRunnable() {
+			public void run() {
+				update();
+			}
+		}.runTaskTimer(Main.self, 20L, 20L);
 	}
 
 	public void setState(State state){
@@ -85,6 +109,32 @@ public class Game {
 		//TODO Stop the game
 		updateSigns();
 	}
+	
+	/**
+	 * Gets the time left in the game
+	 * @return time left
+	 */
+	public int getTime() {
+		return time;
+	}
+	
+	public String getTimeString() {
+		String string = "";
+		
+		int temptime = time;
+		int hours = temptime/3600;
+		temptime-=hours;
+		int minutes = temptime/60;
+		temptime-= minutes;
+		
+		if(hours> 0)
+			string+=hours+":";
+		if(minutes> 0 || string.length()> 0)
+			string+=minutes+":";
+		string+= temptime;
+		
+		return string;
+	}
 
 	/**
 	 * Enables the game
@@ -100,6 +150,15 @@ public class Game {
 	public void disable(){
 		//TODO kick all in game players
 		state = State.DISABLED;
+		updateSigns();
+	}
+	
+	/**
+	 * Restarts the game
+	 */
+	public void restart() {
+		//TODO restart the game
+		state = State.RESTARTING;
 		updateSigns();
 	}
 
@@ -241,6 +300,14 @@ public class Game {
 	private void save(){
 		config = CM.getData(name);
 		chestConfig = CM.getChests(name);
+		
+		
+		if(min!= null && max!= null) {
+			config.set("Arena.min", locToString(min, false));
+			config.set("Arena.max", locToString(max, false));
+		}
+		
+		
 		CM.saveData(name);
 		CM.saveChests(name);
 		//TODO save data
@@ -264,6 +331,19 @@ public class Game {
 		return l;
 	}
 	
+	public String locToString(Location l, boolean yaw) {
+		String coords = "";
+		coords+=l.getWorld().getName();
+		coords+=","+l.getBlockX();
+		coords+=","+l.getBlockY();
+		coords+=","+l.getBlockZ();
+		if(yaw) {
+			coords+=","+l.getPitch();
+			coords+=","+l.getYaw();
+		}
+		return coords;
+	}
+	
 	public void delete() {
 		File folder = new File(Main.self.getDataFolder()+File.separator+name);
 		System.out.println(folder.exists() +"    "+ folder.getAbsolutePath());
@@ -275,5 +355,52 @@ public class Game {
 			for(File f: file.listFiles())
 				del(f);
 		file.delete();
+	}
+	
+	
+	
+	Inventory menu = null;
+	String title = "";
+	
+	public void update() {
+		title = "§2"+getName()+" - Players";
+		if(menu== null || players.size()> menu.getContents().length)
+			menu = Bukkit.createInventory(null, (int) Math.ceil((double) (players.size()+1)/9)*9, title);
+		int i = 0;
+		for(UUID id: players) {
+			ItemStack item = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
+			SkullMeta im = (SkullMeta) item.getItemMeta();
+			Player player = Bukkit.getPlayer(id);
+			String name = player.getName();
+			im.setOwner(name);
+			im.setDisplayName("§7"+name);
+			im.setLore(new ArrayList<String>(Arrays.asList(ChatColor.RED+"❤ "+player.getHealth()+" ❤")));
+			item.setItemMeta(im);
+			menu.setItem(i, item);
+			i++;
+		}
+		ItemStack exit = new ItemStack(Material.MAGMA_CREAM);
+		ItemMeta eim = exit.getItemMeta();
+		eim.setDisplayName("§cBack");
+		exit.setItemMeta(eim);
+		menu.setItem(menu.getContents().length-1, exit);
+	}
+	
+	public void listPlayers(Player p) {
+		p.openInventory(menu);
+	}
+	
+	@EventHandler
+	public void click(InventoryClickEvent event) {
+		Player p = (Player) event.getWhoClicked();
+		Inventory inv = event.getInventory();
+		String name = inv.getTitle();
+		if(name.equals(title) && event.getRawSlot()!= -999) {
+			event.setCancelled(true);
+			ItemStack item = event.getCurrentItem()!= null ? event.getCurrentItem() : event.getCursor()!= null ? event.getCursor() : inv.getItem(event.getRawSlot());
+			
+			if(item.getItemMeta().getDisplayName().equals("§cBack"))
+				p.performCommand("ha list");
+		}
 	}
 }

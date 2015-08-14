@@ -3,6 +3,7 @@ package me.Travja.HungerArena;
 import java.io.File;
 import java.util.logging.Logger;
 
+import me.Travja.HungerArena.Resources.Game;
 import me.Travja.HungerArena.commands.CommandHandler;
 import me.Travja.HungerArena.commands.ha.ArenaCommand;
 import me.Travja.HungerArena.commands.ha.CommandCore;
@@ -12,6 +13,8 @@ import me.Travja.HungerArena.commands.ha.HelpCommand;
 import me.Travja.HungerArena.commands.ha.JoinCommand;
 import me.Travja.HungerArena.commands.ha.KickCommand;
 import me.Travja.HungerArena.commands.ha.LeaveCommand;
+import me.Travja.HungerArena.commands.ha.ListCommand;
+import me.Travja.HungerArena.commands.ha.ManageCommand;
 import me.Travja.HungerArena.commands.ha.RefillCommand;
 import me.Travja.HungerArena.commands.ha.StartCommand;
 import me.Travja.HungerArena.listeners.PvP;
@@ -49,9 +52,11 @@ public class Main extends JavaPlugin {
 		
 		we = (WorldEditPlugin) getServer().getPluginManager().getPlugin("WorldEdit");
 
-		registerCommands();
-		
 		load();
+		
+		GameManager.init();
+		
+		registerCommands();
 		
 		log.info("HungerArena has been enabled!");		
 	}
@@ -75,6 +80,14 @@ public class Main extends JavaPlugin {
 		handler.register(new DisableCommand());
 		handler.register(new RefillCommand());
 		handler.register(new KickCommand());
+		ListCommand lcom = new ListCommand();
+		getServer().getPluginManager().registerEvents(lcom, this);
+		handler.register(lcom);
+		lcom.init();
+		ManageCommand mcom = new ManageCommand();
+		getServer().getPluginManager().registerEvents(mcom, this);
+		handler.register(mcom);
+		mcom.init();
 		
 		getCommand("ha").setExecutor(handler);
 	}
@@ -84,11 +97,22 @@ public class Main extends JavaPlugin {
 	}
 	
 	private void load(){
-		//TODO load game names, create game, and add to list in gameManager
+		for(File file: this.getDataFolder().listFiles())
+			if(file.isDirectory() && !file.getName().equals("Players"))
+				GameManager.addGame(new Game(file.getName()));
 	}
 	
 	public void convert(){
 		//TODO convert configs to new version
+		
+		if(Version.getVersion(config.getString("config"))== Version.LEGACY && Version.getVersion(this.getDescription().getVersion())== Version.V2BETA) {
+			//BIG Conversion
+		}
+		
+		if(Version.getVersion(config.getString("config"))== Version.V2BETA && Version.getVersion(this.getDescription().getVersion())== Version.V2) {
+			//Possibly no conversion
+		}
+		
 		
 		config.set("config", this.getDescription().getVersion());
 		this.saveConfig();

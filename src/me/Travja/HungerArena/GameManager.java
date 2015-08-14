@@ -5,13 +5,26 @@ import java.util.ArrayList;
 import me.Travja.HungerArena.Resources.Game;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 
 public class GameManager {
 	
 	private static ArrayList<Game> games = new ArrayList<Game>();
 	
+	private static int max;
+	
+	public static void init() {
+		max = Main.config.getInt("maxPlayers");
+	}
+	
 	public static ArrayList<Game> getGames() {
 		return games;
+	}
+	
+	public static void updateGames() {
+		for(Game game: games) {
+			game.update();
+		}
 	}
 	
 	/**
@@ -20,6 +33,7 @@ public class GameManager {
 	 */
 	public static void addGame(Game g){
 		games.add(g);
+		Main.self.getServer().getPluginManager().registerEvents(g, Main.self);
 	}
 	
 	/**
@@ -28,6 +42,7 @@ public class GameManager {
 	 */
 	public static void removeGame(Game g){
 		games.remove(g);
+		InventoryClickEvent.getHandlerList().unregister(g);
 	}
 	
 	/**
@@ -112,5 +127,9 @@ public class GameManager {
 			if(g.getName().equalsIgnoreCase(name))
 				return true;
 		return false;
+	}
+	
+	public static int getMaximumPlayers() {
+		return max;
 	}
 }

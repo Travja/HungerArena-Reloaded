@@ -23,8 +23,8 @@ public class JoinCommand implements SubcommandInterface {
 			sender.sendMessage("§cYou're silly! Thinking that the console can join a game...");
 			return true;
 		}
+		Player p = (Player) sender;
 		if(args.length>= 2) {
-			Player p = (Player) sender;
 			String name = args[1];
 			if(GameManager.isGame(name)) {
 				if(!GameManager.isPlaying(p)) {
@@ -38,9 +38,11 @@ public class JoinCommand implements SubcommandInterface {
 					p.sendMessage("§cYou are already playing in a game!");
 			} else
 				p.sendMessage("§cA game with that name doesn't exist!");
-			return true;
+		} else {
+			p.sendMessage("§aRight click a game here to join!");
+			p.performCommand("ha list");
 		}
-		return false;
+		return true;
 	}
 
 	@Override

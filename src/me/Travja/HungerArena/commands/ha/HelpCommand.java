@@ -20,12 +20,14 @@ public class HelpCommand implements SubcommandInterface {
 		sender.sendMessage(c + "/ha - Displays author message!");
 		sender.sendMessage(c + "/ha arena [create|delete] [name] - Creates or deletes an arena.");
 		sender.sendMessage(c + "/ha help - Displays this screen!");
-		sender.sendMessage(c + "/ha join [name] - Joins the game with the given name!");
+		sender.sendMessage(c + "/ha join <name> - Joins the game with the given name!");
 		sender.sendMessage(c + "/ha leave - Makes you leave the game!");
 		sender.sendMessage(c + "/ha disable <name> - Prevents anyone from joining that arena! Leaving the name blank will disable all games!");
 		sender.sendMessage(c + "/ha enable <name> - Opens the game allowing people to join! Leaving the name blank will enable all games!");
 		sender.sendMessage(c + "/ha refill <name> - Refills all chests! Leaving the name blank will refill all games!");
 		sender.sendMessage(c + "/ha kick [player] - Kicks a player from the arena!");
+		sender.sendMessage(c + "/ha list - Opens a GUI to list players and their health!");
+		sender.sendMessage(c + "/ha manage - Opens a GUI to manage the games!");
 		
 		
 		sender.sendMessage(c + "/ha start [name] - Unfreezes tributes allowing them to fight!");
@@ -38,7 +40,6 @@ public class HelpCommand implements SubcommandInterface {
 		sender.sendMessage(c + "/sponsor [Player] [ItemID] [Amount] - Lets you sponsor someone!");
 		sender.sendMessage(c + "/startpoint [1,2,3,4,etc] [1,2,3,4,etc] - Sets the starting points of tributes in a specific arena!");
 		
-		sender.sendMessage(c + "/ha list (1,2,3,4,etc) - Shows a list of players in the game and their health! Numbers are optional.");
 		sender.sendMessage(c + "/ha ready - Votes for the game to start!");
 		sender.sendMessage(c + "/ha reload - Reloads the config!");
 		sender.sendMessage(c + "/ha restart (1,2,3,4,etc) - Restarts the game! Numbers are optional");
