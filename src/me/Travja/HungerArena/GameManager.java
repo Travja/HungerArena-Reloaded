@@ -12,9 +12,11 @@ public class GameManager {
 	private static ArrayList<Game> games = new ArrayList<Game>();
 	
 	private static int max;
+	private static int min;
 	
 	public static void init() {
 		max = Main.config.getInt("maxPlayers");
+		min = Main.config.getInt("minPlayers");
 	}
 	
 	public static ArrayList<Game> getGames() {
@@ -131,5 +133,9 @@ public class GameManager {
 	
 	public static int getMaximumPlayers() {
 		return max;
+	}
+	
+	public static int getMinimumPlayers() {
+		return min;
 	}
 }

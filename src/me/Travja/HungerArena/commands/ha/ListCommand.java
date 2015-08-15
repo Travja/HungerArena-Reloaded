@@ -29,6 +29,17 @@ public class ListCommand implements SubcommandInterface, Listener {
 	static String title = "§2[§3§lGames§2]";
 	Inventory menu = null;
 
+	public ListCommand() {
+		getInventory();
+		
+		new BukkitRunnable() {
+			public void run() {
+				update();
+				GameManager.updateGames();
+			}
+		}.runTaskTimer(Main.self, 20L, 20L);
+	}
+
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		((Player) sender).openInventory(menu);
@@ -59,36 +70,32 @@ public class ListCommand implements SubcommandInterface, Listener {
 		}
 	}
 
-	public void init() {
-		menu = getInventory();
-		
-		new BukkitRunnable() {
-			public void run() {
-				update();
-				GameManager.updateGames();
-			}
-		}.runTaskTimer(Main.self, 20L, 20L);
-	}
-
+	int games = 0;
+	
 	public void update() {
-		if(GameManager.getGames().size()> menu.getContents().length)
+		if(GameManager.getGames().size()!= games)
 			getInventory();
 		for(ItemStack item: menu.getContents()) {
 			if(item!= null && item.getType()!= Material.MAGMA_CREAM) {
 				ItemMeta im = item.getItemMeta();
 				String name = ChatColor.stripColor(im.getDisplayName().split(" ")[0]);
 				Game game = GameManager.getGame(name);
-				if(game.getState()== State.WAITING) {
-					item.setDurability((short) 5);
-					im.setDisplayName("§a"+game.getName()+" - "+game.getState());
-				} else if(game.getState()== State.RESTARTING) {
-					item.setDurability((short) 1);
-					im.setDisplayName("§6"+game.getName()+" - "+game.getState());
-				} else {
+				if(game.getPlayers().size()== game.getMaxPlayers()) {
 					item.setDurability((short) 14);
 					im.setDisplayName("§c"+game.getName()+" - "+game.getState());
+				} else {
+					if(game.getState()== State.WAITING || game.getState()== State.STARTING) {
+						item.setDurability((short) 5);
+						im.setDisplayName("§a"+game.getName()+" - "+game.getState());
+					} else if(game.getState()== State.RESTARTING) {
+						item.setDurability((short) 1);
+						im.setDisplayName("§6"+game.getName()+" - "+game.getState());
+					} else {
+						item.setDurability((short) 14);
+						im.setDisplayName("§c"+game.getName()+" - "+game.getState());
+					}
 				}
-				im.setLore(new ArrayList<String>(Arrays.asList("§7Players: "+game.getPlayers().size()+"/"+GameManager.getMaximumPlayers(),
+				im.setLore(new ArrayList<String>(Arrays.asList("§7Players: "+game.getPlayers().size()+"/"+game.getMaxPlayers(),
 						"§7Time: "+game.getTimeString(), "§8Right click to join or", "§8Left click to list players")));
 				item.setItemMeta(im);
 			}
@@ -120,6 +127,8 @@ public class ListCommand implements SubcommandInterface, Listener {
 		eim.setDisplayName("§cExit");
 		exit.setItemMeta(eim);
 		inv.setItem(inv.getContents().length-1, exit);
+		games = GameManager.getGames().size();
+		menu = inv;
 		return inv;
 	}
 
@@ -132,7 +141,7 @@ public class ListCommand implements SubcommandInterface, Listener {
 
 	@Override
 	public ArrayList<String> getAliases() {
-		return new ArrayList<String>(Arrays.asList("r"));
+		return null;
 	}
 
 	@Override
@@ -153,6 +162,11 @@ public class ListCommand implements SubcommandInterface, Listener {
 	@Override
 	public CommandInterface getParent() {
 		return Main.getCommandHandler().getExecutor("ha");
+	}
+	
+	@Override
+	public boolean isIndependent() {
+		return false;
 	}
 
 }

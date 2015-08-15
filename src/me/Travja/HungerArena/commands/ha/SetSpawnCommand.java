@@ -14,47 +14,40 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
-public class EnableCommand implements SubcommandInterface {
+public class SetSpawnCommand implements SubcommandInterface {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		if(sender instanceof ConsoleCommandSender) {
-			sender.sendMessage("§cYou're silly! Thinking that the console can join a game...");
+			sender.sendMessage("§cThis can only be run in game!");
 			return true;
 		}
+		Player p = (Player) sender;
 		if(args.length>= 2) {
-			Player p = (Player) sender;
 			String name = args[1];
 			if(GameManager.isGame(name)) {
 				Game game = GameManager.getGame(name);
-				game.enable();
-				p.sendMessage(Main.tag+"§aYou have enabled §3"+game.getName());
+				game.setSpawn(p.getLocation());
+				p.sendMessage(Main.tag+"§aSpawn set for §3"+game.getName());
 			} else
 				p.sendMessage("§cA game with that name doesn't exist!");
-			return true;
-		} else if(args.length== 1) {
-			for(Game game: GameManager.getGames()) {
-				game.enable();
-			}
-			sender.sendMessage(Main.tag+"§aAll games have been enabled!");
-			return true;
 		}
-		return false;
+		return true;
 	}
 
 	@Override
 	public String getName() {
-		return "enable";
+		return "setspawn";
 	}
 
 	@Override
 	public ArrayList<String> getAliases() {
-		return new ArrayList<String>(Arrays.asList("e"));
+		return new ArrayList<String>(Arrays.asList("ss"));
 	}
 
 	@Override
 	public String getPermission() {
-		return "hungerarena.manage";
+		return "hungerarena.setspawn";
 	}
 
 	@Override
@@ -64,12 +57,17 @@ public class EnableCommand implements SubcommandInterface {
 
 	@Override
 	public String getUsage() {
-		return "/ha enable <name>";
+		return "/ha setspawn [name]";
 	}
 
 	@Override
 	public CommandInterface getParent() {
 		return Main.getCommandHandler().getExecutor("ha");
+	}
+	
+	@Override
+	public boolean isIndependent() {
+		return false;
 	}
 
 }

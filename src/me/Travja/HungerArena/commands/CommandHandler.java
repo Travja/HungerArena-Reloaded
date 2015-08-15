@@ -25,7 +25,7 @@ public class CommandHandler implements CommandExecutor {
 	public boolean exists(String name) {
 		for(String ss: commands.keySet()) {
 			CommandInterface command = commands.get(ss);
-			if(command.getName().equals(name.toLowerCase()) || command.getAliases().contains(name.toLowerCase()))
+			if(command.getName().equals(name.toLowerCase()) || (command.getAliases()!= null && command.getAliases().contains(name.toLowerCase())))
 				return true;
 		}
 		return false;
@@ -34,8 +34,8 @@ public class CommandHandler implements CommandExecutor {
 	public boolean exists(String name, String arg) {
 		for(String ss: subcommands.keySet()) {
 			SubcommandInterface sub = subcommands.get(ss);
-			if(sub.getName().equals(arg.toLowerCase()) || sub.getAliases().contains(arg.toLowerCase()))
-				if(sub.getParent().getName().equals(name.toLowerCase()) || sub.getParent().getAliases().contains(name.toLowerCase()))
+			if(sub.getName().equals(arg.toLowerCase()) || (sub.getAliases()!= null && sub.getAliases().contains(arg.toLowerCase())))
+				if(sub.getParent().getName().equals(name.toLowerCase()) || (sub.getParent().getAliases()!= null && sub.getParent().getAliases().contains(name.toLowerCase())))
 					return true;
 		}
 		return false;
@@ -46,7 +46,7 @@ public class CommandHandler implements CommandExecutor {
 	public CommandInterface getExecutor(String name) {
 		for(String ss: commands.keySet()) {
 			CommandInterface command = commands.get(ss);
-			if(command.getName().equals(name.toLowerCase()) || command.getAliases().contains(name.toLowerCase()))
+			if(command.getName().equals(name.toLowerCase()) || (command.getAliases()!= null && command.getAliases().contains(name.toLowerCase())))
 				return command;
 		}
 		return null;
@@ -55,8 +55,8 @@ public class CommandHandler implements CommandExecutor {
 	public SubcommandInterface getExecutor(String name, String arg) {
 		for(String ss: subcommands.keySet()) {
 			SubcommandInterface sub = subcommands.get(ss);
-			if(sub.getName().equals(arg.toLowerCase()) || sub.getAliases().contains(arg.toLowerCase()))
-				if(sub.getParent().getName().equals(name.toLowerCase()) || sub.getParent().getAliases().contains(name.toLowerCase()))
+			if(sub.getName().equals(arg.toLowerCase()) || (sub.getAliases()!= null && sub.getAliases().contains(arg.toLowerCase())))
+				if(sub.getParent().getName().equals(name.toLowerCase()) || (sub.getParent().getAliases()!= null && sub.getParent().getAliases().contains(name.toLowerCase())))
 					return sub;
 		}
 		return null;
@@ -67,8 +67,8 @@ public class CommandHandler implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		if(exists(commandLabel)) {
-			if(args.length== 0) {
-				CommandInterface command = getExecutor(commandLabel);
+			CommandInterface command = getExecutor(commandLabel);
+			if(args.length== 0 || command.isIndependent()) {
 				if(sender instanceof ConsoleCommandSender || sender.hasPermission(command.getPermission())) {
 					boolean success = command.onCommand(sender, cmd, commandLabel, args);
 					if(!success)
@@ -77,15 +77,15 @@ public class CommandHandler implements CommandExecutor {
 					sender.sendMessage(command.getPermissionMessage());
 			} else {
 				if(exists(commandLabel, args[0])) {
-					SubcommandInterface command = getExecutor(commandLabel, args[0]);
-					if(sender instanceof ConsoleCommandSender || sender.hasPermission(command.getPermission())) {
-						boolean success = command.onCommand(sender, cmd, commandLabel, args);
+					SubcommandInterface subcommand = getExecutor(commandLabel, args[0]);
+					if(sender instanceof ConsoleCommandSender || sender.hasPermission(subcommand.getPermission())) {
+						boolean success = subcommand.onCommand(sender, cmd, commandLabel, args);
 						if(!success)
-							sender.sendMessage(command.getUsage());
+							sender.sendMessage(subcommand.getUsage());
 					} else
-						sender.sendMessage(command.getPermissionMessage());
+						sender.sendMessage(subcommand.getPermissionMessage());
 				} else
-					sender.sendMessage(getExecutor(commandLabel).getUsage());
+					sender.sendMessage(command.getUsage());
 			}
 		}
 		return true;

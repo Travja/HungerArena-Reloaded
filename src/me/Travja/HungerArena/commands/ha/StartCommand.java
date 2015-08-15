@@ -48,4 +48,9 @@ public class StartCommand implements SubcommandInterface {
 		return Main.getCommandHandler().getExecutor("ha");
 	}
 
+	@Override
+	public boolean isIndependent() {
+		return false;
+	}
+	
 }

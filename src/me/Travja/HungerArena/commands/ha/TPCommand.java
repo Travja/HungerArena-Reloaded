@@ -9,52 +9,61 @@ import me.Travja.HungerArena.Resources.Game;
 import me.Travja.HungerArena.commands.CommandInterface;
 import me.Travja.HungerArena.commands.SubcommandInterface;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
-public class DisableCommand implements SubcommandInterface {
+public class TPCommand implements SubcommandInterface {
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		if(sender instanceof ConsoleCommandSender) {
-			sender.sendMessage("§cYou're silly! Thinking that the console can join a game...");
+			sender.sendMessage("§cThis command can only be run in game!");
 			return true;
 		}
-		if(args.length>= 2) {
+		if(args.length==1)
+			return false;
+		else {
 			Player p = (Player) sender;
-			String name = args[1];
-			if(GameManager.isGame(name)) {
-				Game game = GameManager.getGame(name);
-				game.disable();
-				p.sendMessage(Main.tag+"§aYou have disabled §3"+game.getName());
-			} else
-				p.sendMessage("§cA game with that name doesn't exist!");
-			return true;
-		} else if(args.length== 1) {
-			for(Game game: GameManager.getGames()) {
-				game.disable();
+			Player target = Bukkit.getPlayer(args[1]);
+			if(target== null) {
+				p.sendMessage("§cThat player isn't online!");
+				return true;
 			}
-			sender.sendMessage(Main.tag+"§aAll games have been disabled!");
-			return true;
+			if(GameManager.isPlaying(p)) {
+				p.sendMessage("§cYou can't spectate another game while you're playing!");
+				return true;
+			}
+			if(GameManager.isPlaying(target)) {
+				Game game = GameManager.getGame(target);
+				if(GameManager.getGame(p)!= null)
+					GameManager.getGame(p).removeSpectator(p);
+				game.addSpectator(p);
+				p.sendMessage(Main.tag+"§7Teleporting...");
+				p.teleport(target);
+			} else {
+				p.sendMessage("§cThat player isn't in a game!");
+			}
 		}
-		return false;
+		return true;
 	}
 
 	@Override
 	public String getName() {
-		return "disable";
+		return "tp";
 	}
 
 	@Override
 	public ArrayList<String> getAliases() {
-		return new ArrayList<String>(Arrays.asList("d"));
+		return new ArrayList<String>(Arrays.asList("teleport"));
 	}
 
 	@Override
 	public String getPermission() {
-		return "hungerarena.manage";
+		return "hungerarena.tp";
 	}
 
 	@Override
@@ -64,12 +73,17 @@ public class DisableCommand implements SubcommandInterface {
 
 	@Override
 	public String getUsage() {
-		return "/ha disable <name>";
+		return "/ha tp [player]";
 	}
 
 	@Override
 	public CommandInterface getParent() {
 		return Main.getCommandHandler().getExecutor("ha");
+	}
+
+	@Override
+	public boolean isIndependent() {
+		return false;
 	}
 
 }

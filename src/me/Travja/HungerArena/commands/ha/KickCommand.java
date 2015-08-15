@@ -62,5 +62,10 @@ public class KickCommand implements SubcommandInterface {
 	public CommandInterface getParent() {
 		return Main.getCommandHandler().getExecutor("ha");
 	}
+	
+	@Override
+	public boolean isIndependent() {
+		return false;
+	}
 
 }

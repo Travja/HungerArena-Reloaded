@@ -30,6 +30,16 @@ public class ManageCommand implements SubcommandInterface, Listener {
 	String title = "§0[§c§lManage§0]";
 	Inventory menu = null;
 
+	public ManageCommand() {
+		getInventory();
+
+		new BukkitRunnable() {
+			public void run() {
+				update();
+			}
+		}.runTaskTimer(Main.self, 20L, 20L);
+	}
+
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		if(sender instanceof ConsoleCommandSender) {
@@ -66,26 +76,17 @@ public class ManageCommand implements SubcommandInterface, Listener {
 		}
 	}
 
-	public void init() {
-		menu = getInventory();
-
-		new BukkitRunnable() {
-			public void run() {
-				update();
-				GameManager.updateGames();
-			}
-		}.runTaskTimer(Main.self, 20L, 20L);
-	}
-
+	int games = 0;
+	
 	public void update() {
-		if(GameManager.getGames().size()> menu.getContents().length)
+		if(GameManager.getGames().size()!= games)
 			getInventory();
 		for(ItemStack item: menu.getContents()) {
 			if(item!= null && item.getType()!= Material.MAGMA_CREAM) {
 				ItemMeta im = item.getItemMeta();
 				String name = ChatColor.stripColor(im.getDisplayName().split(" ")[0]);
 				Game game = GameManager.getGame(name);
-				if(game.getState()== State.WAITING) {
+				if(game.getState()== State.WAITING || game.getState()== State.STARTING) {
 					item.setDurability((short) 5);
 					im.setDisplayName("§a"+game.getName()+" - "+game.getState());
 				} else if(game.getState()== State.RESTARTING) {
@@ -95,7 +96,7 @@ public class ManageCommand implements SubcommandInterface, Listener {
 					item.setDurability((short) 14);
 					im.setDisplayName("§c"+game.getName()+" - "+game.getState());
 				}
-				im.setLore(new ArrayList<String>(Arrays.asList("§7Players: "+game.getPlayers().size()+"/"+GameManager.getMaximumPlayers(),
+				im.setLore(new ArrayList<String>(Arrays.asList("§7Players: "+game.getPlayers().size()+"/"+game.getMaxPlayers(),
 						"§7Time: "+game.getTimeString(), "§8Right click to close,", "§8Left click to open or", "§8Shift click to restart")));
 				item.setItemMeta(im);
 			}
@@ -127,6 +128,8 @@ public class ManageCommand implements SubcommandInterface, Listener {
 		eim.setDisplayName("§cExit");
 		exit.setItemMeta(eim);
 		inv.setItem(inv.getContents().length-1, exit);
+		games = GameManager.getGames().size();
+		menu = inv;
 		return inv;
 	}
 
@@ -160,6 +163,11 @@ public class ManageCommand implements SubcommandInterface, Listener {
 	@Override
 	public CommandInterface getParent() {
 		return Main.getCommandHandler().getExecutor("ha");
+	}
+	
+	@Override
+	public boolean isIndependent() {
+		return false;
 	}
 
 }

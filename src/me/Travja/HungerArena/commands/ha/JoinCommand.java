@@ -29,7 +29,7 @@ public class JoinCommand implements SubcommandInterface {
 			if(GameManager.isGame(name)) {
 				if(!GameManager.isPlaying(p)) {
 					Game game = GameManager.getGame(name);
-					if(game.getState()== State.WAITING) {
+					if((game.getState()== State.WAITING || game.getState()== State.STARTING) && game.getPlayers().size()< game.getMaxPlayers()) {
 						game.addPlayer(p);
 						p.sendMessage(Main.tag+"§aYou have joined §3"+game.getName());
 					} else
@@ -67,12 +67,17 @@ public class JoinCommand implements SubcommandInterface {
 
 	@Override
 	public String getUsage() {
-		return "/ha join [Arena]";
+		return "/ha join [name]";
 	}
 
 	@Override
 	public CommandInterface getParent() {
 		return Main.getCommandHandler().getExecutor("ha");
+	}
+	
+	@Override
+	public boolean isIndependent() {
+		return false;
 	}
 
 }

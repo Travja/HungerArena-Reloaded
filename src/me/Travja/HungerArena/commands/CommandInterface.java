@@ -19,4 +19,6 @@ public interface CommandInterface {
 	
 	public String getUsage();
 	
+	public boolean isIndependent();
+	
 }

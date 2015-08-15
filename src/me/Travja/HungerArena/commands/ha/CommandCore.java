@@ -41,6 +41,9 @@ public class CommandCore implements CommandInterface {
 		return "/ha [start|create...]";
 	}
 	
+	@Override
+	public boolean isIndependent() {
+		return false;
+	}
 	
-
 }
