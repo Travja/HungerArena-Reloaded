@@ -1,14 +1,16 @@
 package me.travja.hungerarena.commands.core;
 
-import me.travja.hungerarena.GameManager;
+import me.travja.hungerarena.managers.GameManager;
 import me.travja.hungerarena.Main;
 import me.travja.hungerarena.commands.CommandModule;
-import me.travja.hungerarena.resources.Game;
+import me.travja.hungerarena.game.Game;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+
+import static me.travja.hungerarena.managers.MessageManager.sendMessage;
 
 public class LeaveModule extends CommandModule {
 
@@ -18,17 +20,13 @@ public class LeaveModule extends CommandModule {
 
 	@Override
 	public boolean execute(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-		if(sender instanceof ConsoleCommandSender) {
-			sender.sendMessage("§cYou're silly! Thinking that the console can leave a game...");
-			return true;
-		}
 		Player p = (Player) sender;
 		if(GameManager.isPlaying(p)) {
 			Game game = GameManager.getGame(p);
 			game.removePlayer(p);
-			p.sendMessage(Main.tag+"§aYou have left §3"+game.getName());
+			sendMessage(p, "&aYou have left &3"+game.getName());
 		} else
-			p.sendMessage("§cYou aren't playing in a game!");
+			sendMessage(p, "&cYou aren't playing in a game!");
 		return true;
 	}
 

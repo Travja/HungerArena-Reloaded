@@ -1,7 +1,6 @@
 package me.travja.hungerarena.commands.core;
 
 import me.travja.hungerarena.commands.CommandModule;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -13,14 +12,7 @@ public class CoreModule extends CommandModule {
 
     @Override
     public boolean execute(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-        if (args.length > 0) {
-            CommandModule child = getChild(args[0]);
-            if(child != null) {
-                child.execute(sender, cmd, commandLabel, args);
-            } else
-                sender.sendMessage(ChatColor.RED + "Unknown subcommand. Type /ha help for help!");
-        } else
-            sender.sendMessage("§6HungerArena by §2Travja!\n§aType /ha help for help!");
+        sender.sendMessage("§6HungerArena by §2Travja!\n§aType /ha help for help!");
 
         return true;
     }

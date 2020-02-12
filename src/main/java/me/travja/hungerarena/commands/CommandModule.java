@@ -28,7 +28,7 @@ public abstract class CommandModule {
         setUsage(Chat.translate(usage));
         setAliases(alias);
         addAlias(name);
-        if(this instanceof Listener)
+        if (this instanceof Listener)
             Main.self.getServer().getPluginManager().registerEvents((Listener) this, Main.self);
     }
 
@@ -48,8 +48,9 @@ public abstract class CommandModule {
         return this.parent == null;
     }
 
-    public void addChild(CommandModule child) {
+    public CommandModule addChild(CommandModule child) {
         this.children.add(child);
+        return this;
     }
 
     public void removeChild(CommandModule child) {
@@ -88,8 +89,8 @@ public abstract class CommandModule {
         this.permissionMessage = permissionMessage;
     }
 
-    public String getUsage() {
-        return usage;
+    public String getUsage(String nameStr) {
+        return usage.replace("<command>", nameStr);
     }
 
     public void setUsage(String usage) {

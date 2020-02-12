@@ -1,8 +1,8 @@
 package me.travja.hungerarena.commands.core;
 
-import me.travja.hungerarena.GameManager;
+import me.travja.hungerarena.managers.GameManager;
 import me.travja.hungerarena.commands.CommandModule;
-import me.travja.hungerarena.resources.Game;
+import me.travja.hungerarena.game.Game;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;

@@ -1,9 +1,10 @@
 package me.travja.hungerarena.commands.core;
 
-import me.travja.hungerarena.GameManager;
+import me.travja.hungerarena.managers.GameManager;
 import me.travja.hungerarena.Main;
 import me.travja.hungerarena.commands.CommandModule;
-import me.travja.hungerarena.resources.Game;
+import me.travja.hungerarena.game.Game;
+import me.travja.hungerarena.managers.MessageManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -19,13 +20,13 @@ public class RefillModule extends CommandModule {
             for (Game game : GameManager.getGames()) {
                 game.refillChests();
             }
-            sender.sendMessage(Main.tag + "§aAll games' chests have been refilled!");
+            MessageManager.sendMessage(sender, "&aAll games' chests have been refilled!");
         } else {
             String name = args[1];
             if (GameManager.isGame(name)) {
                 Game game = GameManager.getGame(name);
                 game.refillChests();
-                sender.sendMessage(Main.tag + "§aChests refilled for §3" + game.getName());
+                MessageManager.sendMessage(sender, "&aChests refilled for §3" + game.getName());
             }
         }
         return true;

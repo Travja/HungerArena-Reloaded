@@ -1,6 +1,6 @@
 package me.travja.hungerarena.listeners;
 
-import me.travja.hungerarena.GameManager;
+import me.travja.hungerarena.managers.GameManager;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

@@ -1,8 +1,9 @@
-package me.travja.hungerarena.resources;
+package me.travja.hungerarena.game;
 
-import me.travja.hungerarena.CM;
-import me.travja.hungerarena.GameManager;
+import me.travja.hungerarena.managers.ConfigManager;
+import me.travja.hungerarena.managers.GameManager;
 import me.travja.hungerarena.Main;
+import me.travja.hungerarena.managers.MessageManager;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
@@ -228,7 +229,7 @@ public class Game implements Listener {
      */
     public void addPlayer(Player player) {
         //TODO teleport player to game lobby
-        sendMessage(Main.self + player.getName() + " §ajoined! §7" + (players.size() + 1) + "/" + maxPlayers);
+        sendMessage(Main.self + player.getName() + " &ajoined! &7" + (players.size() + 1) + "/" + maxPlayers);
         players.add(player.getUniqueId());
         playerInvs.put(player.getUniqueId(), player.getInventory().getContents());
         playerArmor.put(player.getUniqueId(), player.getInventory().getArmorContents());
@@ -269,7 +270,7 @@ public class Game implements Listener {
             playerNumbers.remove(num);
 
         player.teleport(spawn);
-        sendMessage(Main.tag + "§aThe tribute, §3" + player.getName() + " §ahas left!");
+        sendMessage("&aThe tribute, &3" + player.getName() + " &ahas left!");
     }
 
     public int getNumber(Player player) {
@@ -396,13 +397,13 @@ public class Game implements Listener {
      */
     public void sendMessage(String message) {
         for (UUID id : players)
-            Bukkit.getPlayer(id).sendMessage(message);
+            MessageManager.sendMessage(Bukkit.getPlayer(id), message);
     }
 
     @SuppressWarnings("unchecked")
     private void load() {
-        config = CM.getData(name);
-        chestConfig = CM.getChests(name);
+        config = ConfigManager.getData(name);
+        chestConfig = ConfigManager.getChests(name);
         min = getLocation(config.getString("Arena.min"), false);
         max = getLocation(config.getString("Arena.max"), false);
 
@@ -443,8 +444,8 @@ public class Game implements Listener {
     }
 
     private void save() {
-        config = CM.getData(name);
-        chestConfig = CM.getChests(name);
+        config = ConfigManager.getData(name);
+        chestConfig = ConfigManager.getChests(name);
 
 
         if (min != null && max != null) {
@@ -460,8 +461,8 @@ public class Game implements Listener {
                 config.set("Spawns." + i, locToString(spawns.get(i), true));
 
 
-        CM.saveData(name);
-        CM.saveChests(name);
+        ConfigManager.saveData(name);
+        ConfigManager.saveChests(name);
         //TODO save data
     }
 

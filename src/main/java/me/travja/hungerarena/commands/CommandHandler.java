@@ -11,13 +11,15 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 
+import static me.travja.hungerarena.managers.MessageManager.sendMessage;
+
 public class CommandHandler implements CommandExecutor {
 
     private ArrayList<CommandModule> modules = new ArrayList<>();
     private static final String NO_PERM = ChatColor.RED + "You don't have permission for that!";
 
     public void init() {
-        CommandModule core = new CoreModule(null, "ha", "hungerarena.basic", NO_PERM, "/<command> <start|create...>", "hungerarena");
+        CommandModule core = new CoreModule(null, "ha", "hungerarena.basic", NO_PERM, ChatColor.RED + "Unknown subcommand. Type /<command> help for help!", "hungerarena");
         modules.add(core);
         modules.add(new SpawnsModule(null, "startpoint", "hungerarena.startpoint", NO_PERM, "/<command> <name|cancel> [number]", "sp").setRequirePlayer(true));
         modules.add(new SponsorModule(null, "sponsor", "hungerarena.sponsor", NO_PERM, "/<command> <player> <item> [amount]"));
@@ -48,31 +50,40 @@ public class CommandHandler implements CommandExecutor {
         return false;
     }
 
-    public CommandModule getExecutor(String name) {
+    public CommandModule getExecutor(String name, String[] args) {
+        CommandModule ret = null;
         for (CommandModule module : modules) {
             if (module.getAliases().contains(name.toLowerCase()))
-                return module;
+                ret = module;
         }
 
-        return null;
+        if(args.length > 0 && ret != null) {
+            for(String arg: args) {
+                CommandModule child = ret.getChild(arg);
+                if(child != null)
+                    ret = child;
+            }
+        }
+
+        return ret;
     }
 
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (exists(label)) {
-            CommandModule command = getExecutor(label);
+            CommandModule command = getExecutor(label, args);
+
             if (command.requirePlayer() && !(sender instanceof Player)) {
-                sender.sendMessage("This can only be run in game!");
+                sendMessage(sender, ChatColor.RED + "This can only be run in game!");
                 return true;
             }
 
             if (sender.hasPermission(command.getPermission())) {
-                boolean success = command.execute(sender, cmd, label, args);
-                if (!success)
-                    sender.sendMessage(command.getUsage().replace("<command>", label));
+                if (!command.execute(sender, cmd, label, args))
+                    sendMessage(sender, command.getUsage(label));
             } else
-                sender.sendMessage(command.getPermissionMessage());
+                sendMessage(sender, command.getPermissionMessage());
         }
         return true;
     }

@@ -1,7 +1,7 @@
 package me.travja.hungerarena.listeners;
 
-import me.travja.hungerarena.GameManager;
-import me.travja.hungerarena.resources.Game;
+import me.travja.hungerarena.managers.GameManager;
+import me.travja.hungerarena.game.Game;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;

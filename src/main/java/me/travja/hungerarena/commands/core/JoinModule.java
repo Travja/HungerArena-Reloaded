@@ -1,10 +1,10 @@
 package me.travja.hungerarena.commands.core;
 
-import me.travja.hungerarena.GameManager;
-import me.travja.hungerarena.Main;
 import me.travja.hungerarena.commands.CommandModule;
-import me.travja.hungerarena.resources.Game;
-import me.travja.hungerarena.resources.Game.State;
+import me.travja.hungerarena.game.Game;
+import me.travja.hungerarena.game.Game.State;
+import me.travja.hungerarena.managers.GameManager;
+import me.travja.hungerarena.managers.MessageManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -19,7 +19,7 @@ public class JoinModule extends CommandModule {
     @Override
     public boolean execute(CommandSender sender, Command cmd, String commandLabel, String[] args) {
         if (sender instanceof ConsoleCommandSender) {
-            sender.sendMessage("§cYou're silly! Thinking that the console can join a game...");
+            MessageManager.sendMessage(sender, "&cYou're silly! Thinking that the console can join a game...");
             return true;
         }
         Player p = (Player) sender;
@@ -30,15 +30,15 @@ public class JoinModule extends CommandModule {
                     Game game = GameManager.getGame(name);
                     if ((game.getState() == State.WAITING || game.getState() == State.STARTING) && game.getPlayers().size() < game.getMaxPlayers()) {
                         game.addPlayer(p);
-                        p.sendMessage(Main.tag + "§aYou have joined §3" + game.getName());
+                        MessageManager.sendMessage(p, "&aYou have joined §3" + game.getName());
                     } else
-                        p.sendMessage("§cYou can't join that game right now!");
+                        MessageManager.sendMessage(p, "&cYou can't join that game right now!");
                 } else
-                    p.sendMessage("§cYou are already playing in a game!");
+                    MessageManager.sendMessage(p, "&cYou are already playing in a game!");
             } else
-                p.sendMessage("§cA game with that name doesn't exist!");
+                MessageManager.sendMessage(p, "&cA game with that name doesn't exist!");
         } else {
-            p.sendMessage("§aRight click a game here to join!");
+            MessageManager.sendMessage(p, "&aRight click a game here to join!");
             p.performCommand("ha list");
         }
         return true;

@@ -1,13 +1,14 @@
 package me.travja.hungerarena.commands.core;
 
-import me.travja.hungerarena.GameManager;
-import me.travja.hungerarena.Main;
 import me.travja.hungerarena.commands.CommandModule;
-import me.travja.hungerarena.resources.Game;
+import me.travja.hungerarena.game.Game;
+import me.travja.hungerarena.managers.GameManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+
+import static me.travja.hungerarena.managers.MessageManager.sendMessage;
 
 public class SetSpawnModule extends CommandModule {
 
@@ -18,7 +19,7 @@ public class SetSpawnModule extends CommandModule {
     @Override
     public boolean execute(CommandSender sender, Command cmd, String commandLabel, String[] args) {
         if (sender instanceof ConsoleCommandSender) {
-            sender.sendMessage("§cThis can only be run in game!");
+            sendMessage(sender, "&cThis can only be run in game!");
             return true;
         }
         Player p = (Player) sender;
@@ -27,9 +28,9 @@ public class SetSpawnModule extends CommandModule {
             if (GameManager.isGame(name)) {
                 Game game = GameManager.getGame(name);
                 game.setSpawn(p.getLocation());
-                p.sendMessage(Main.tag + "§aSpawn set for §3" + game.getName());
+                sendMessage(p, "&aSpawn set for &3" + game.getName());
             } else
-                p.sendMessage("§cA game with that name doesn't exist!");
+                sendMessage(p, "&cA game with that name doesn't exist!");
         }
         return true;
     }

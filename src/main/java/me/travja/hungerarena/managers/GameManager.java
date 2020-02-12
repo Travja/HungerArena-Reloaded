@@ -1,6 +1,7 @@
-package me.travja.hungerarena;
+package me.travja.hungerarena.managers;
 
-import me.travja.hungerarena.resources.Game;
+import me.travja.hungerarena.Main;
+import me.travja.hungerarena.game.Game;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

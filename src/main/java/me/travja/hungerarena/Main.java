@@ -3,11 +3,12 @@ package me.travja.hungerarena;
 import java.io.File;
 import java.util.logging.Logger;
 
-import me.travja.hungerarena.resources.Game;
+import me.travja.hungerarena.game.Game;
 import me.travja.hungerarena.commands.CommandHandler;
 import me.travja.hungerarena.listeners.MovementListener;
 import me.travja.hungerarena.listeners.PvP;
 
+import me.travja.hungerarena.managers.GameManager;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -20,8 +21,6 @@ public class Main extends JavaPlugin {
 	public static Main self;
 
 	public static WorldEditPlugin we;
-
-	public static String tag = "§3[HungerArena] ";
 
 	public void onEnable(){
 		title();

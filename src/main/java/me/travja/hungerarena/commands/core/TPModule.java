@@ -1,9 +1,10 @@
 package me.travja.hungerarena.commands.core;
 
-import me.travja.hungerarena.GameManager;
+import me.travja.hungerarena.managers.GameManager;
 import me.travja.hungerarena.Main;
 import me.travja.hungerarena.commands.CommandModule;
-import me.travja.hungerarena.resources.Game;
+import me.travja.hungerarena.game.Game;
+import me.travja.hungerarena.managers.MessageManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -18,21 +19,17 @@ public class TPModule extends CommandModule {
 
     @Override
     public boolean execute(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-        if (sender instanceof ConsoleCommandSender) {
-            sender.sendMessage("§cThis command can only be run in game!");
-            return true;
-        }
         if (args.length == 1)
             return false;
         else {
             Player p = (Player) sender;
             Player target = Bukkit.getPlayer(args[1]);
             if (target == null) {
-                p.sendMessage("§cThat player isn't online!");
+                MessageManager.sendMessage(p, "&cThat player isn't online!");
                 return true;
             }
             if (GameManager.isPlaying(p)) {
-                p.sendMessage("§cYou can't spectate another game while you're playing!");
+                MessageManager.sendMessage(p, "&cYou can't spectate another game while you're playing!");
                 return true;
             }
             if (GameManager.isPlaying(target)) {
@@ -40,10 +37,10 @@ public class TPModule extends CommandModule {
                 if (GameManager.getGame(p) != null)
                     GameManager.getGame(p).removeSpectator(p);
                 game.addSpectator(p);
-                p.sendMessage(Main.tag + "§7Teleporting...");
+                MessageManager.sendMessage(p, "&7Teleporting...");
                 p.teleport(target);
             } else {
-                p.sendMessage("§cThat player isn't in a game!");
+                MessageManager.sendMessage(p, "&cThat player isn't in a game!");
             }
         }
         return true;
