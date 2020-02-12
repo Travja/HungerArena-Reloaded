@@ -2,6 +2,7 @@ package me.travja.hungerarena.managers;
 
 import me.travja.hungerarena.Main;
 import me.travja.hungerarena.game.Game;
+import me.travja.hungerarena.game.GameState;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -214,16 +215,16 @@ public class GameManager {
     private static ItemStack getDisplayItem(Game game) {
         ItemStack item = new ItemStack(Material.GREEN_WOOL, game.getPlayers().size() > 0 ? game.getPlayers().size() : 1);
         String prefix;
-        if (game.getState() == Game.State.DISABLED ||
-                game.getState() == Game.State.INGAME ||
-                game.getState() == Game.State.STARTING ||
+        if (game.getGameState() == GameState.DISABLED ||
+                game.getGameState() == GameState.INGAME ||
+                game.getGameState() == GameState.STARTING ||
                 game.getPlayers().size() == game.getMaxPlayers()) {
             item.setType(Material.RED_WOOL);
             prefix = ChatColor.RED + "";
-        } else if (game.getState() == Game.State.WAITING) {
+        } else if (game.getGameState() == GameState.WAITING) {
             item.setType(Material.GREEN_WOOL);
             prefix = ChatColor.GREEN + "";
-        } else if (game.getState() == Game.State.RESTARTING) {
+        } else if (game.getGameState() == GameState.RESTARTING) {
             item.setType(Material.ORANGE_WOOL);
             prefix = ChatColor.GOLD + "";
         } else {
@@ -231,7 +232,7 @@ public class GameManager {
         }
 
         ItemMeta im = item.getItemMeta();
-        im.setDisplayName(prefix + game.getName() + " - " + game.getState());
+        im.setDisplayName(prefix + game.getName() + " - " + game.getGameState());
         im.setLore(new ArrayList<>(Arrays.asList("§7Players: " + game.getPlayers().size() + "/" + game.getMaxPlayers(),
                 "§7Time: " + game.getTimeString(), "§8Right click to join or", "§8Left click to list players")));
         item.setItemMeta(im);

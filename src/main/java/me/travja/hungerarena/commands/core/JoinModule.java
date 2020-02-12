@@ -2,7 +2,7 @@ package me.travja.hungerarena.commands.core;
 
 import me.travja.hungerarena.commands.CommandModule;
 import me.travja.hungerarena.game.Game;
-import me.travja.hungerarena.game.Game.State;
+import me.travja.hungerarena.game.GameState;
 import me.travja.hungerarena.managers.GameManager;
 import me.travja.hungerarena.managers.MessageManager;
 import org.bukkit.command.Command;
@@ -28,7 +28,7 @@ public class JoinModule extends CommandModule {
             if (GameManager.isGame(name)) {
                 if (!GameManager.isPlaying(p)) {
                     Game game = GameManager.getGame(name);
-                    if ((game.getState() == State.WAITING || game.getState() == State.STARTING) && game.getPlayers().size() < game.getMaxPlayers()) {
+                    if ((game.getGameState() == GameState.WAITING || game.getGameState() == GameState.STARTING) && game.getPlayers().size() < game.getMaxPlayers()) {
                         game.addPlayer(p);
                         MessageManager.sendMessage(p, "&aYou have joined §3" + game.getName());
                     } else

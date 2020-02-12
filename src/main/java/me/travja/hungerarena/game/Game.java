@@ -24,45 +24,41 @@ import java.util.Map.Entry;
 
 public class Game implements Listener {
 
-    public enum State {
-        WAITING, STARTING, INGAME, RESTARTING, DISABLED
-    }
+    private String name;
+    private GameState gameState;
+    private ArrayList<UUID> players;
+    private ArrayList<UUID> spectators;
+    private HashMap<UUID, GameMode> specGMs;
+    private HashMap<UUID, Location> specLocs;
+    private boolean global;
+    private boolean grace;
+    private int graceTime;
+    private int time = 0;
+    private boolean countdownEnabled;
+    private int countdown;
 
-    String name;
-    State state;
-    ArrayList<UUID> players;
-    ArrayList<UUID> spectators;
-    HashMap<UUID, GameMode> specGMs;
-    HashMap<UUID, Location> specLocs;
-    boolean global;
-    boolean grace;
-    int graceTime;
-    int time = 0;
-    boolean countdownEnabled;
-    int countdown;
+    private Location min;
+    private Location max;
+    private Location spawn;
 
-    Location min;
-    Location max;
-    Location spawn;
+    private HashMap<Location, ItemStack[]> chests = new HashMap<>();
 
-    HashMap<Location, ItemStack[]> chests = new HashMap<Location, ItemStack[]>();
+    private ArrayList<Location> signs = new ArrayList<>();
 
-    ArrayList<Location> signs = new ArrayList<Location>();
+    private HashMap<Integer, UUID> playerNumbers = new HashMap<>();
+    private HashMap<UUID, ItemStack[]> playerInvs = new HashMap<>();
+    private HashMap<UUID, ItemStack[]> playerArmor = new HashMap<>();
 
-    HashMap<Integer, UUID> playerNumbers = new HashMap<Integer, UUID>();
-    HashMap<UUID, ItemStack[]> playerInvs = new HashMap<UUID, ItemStack[]>();
-    HashMap<UUID, ItemStack[]> playerArmor = new HashMap<UUID, ItemStack[]>();
+    private HashMap<Integer, Location> spawns = new HashMap<>();
 
-    HashMap<Integer, Location> spawns = new HashMap<Integer, Location>();
-
-    int maxPlayers;
+    private int maxPlayers;
 
     private FileConfiguration config;
     private FileConfiguration chestConfig;
 
     public Game(String name) {
         this.name = name;
-        this.state = State.WAITING;
+        this.gameState = GameState.WAITING;
         this.players = new ArrayList<>();
         this.spectators = new ArrayList<>();
         this.specGMs = new HashMap<>();
@@ -91,7 +87,7 @@ public class Game implements Listener {
         this.name = name;
         this.min = min;
         this.max = max;
-        this.state = State.WAITING;
+        this.gameState = GameState.WAITING;
         this.players = new ArrayList<>();
         this.spectators = new ArrayList<>();
         this.specLocs = new HashMap<>();
@@ -113,8 +109,8 @@ public class Game implements Listener {
         }.runTaskTimer(Main.self, 20L, 20L);
     }
 
-    public void setState(State state) {
-        this.state = state;
+    public void setGameState(GameState gameState) {
+        this.gameState = gameState;
         updateSigns();
     }
 
@@ -122,7 +118,7 @@ public class Game implements Listener {
      * Starts the game
      */
     public void start() {
-        state = State.STARTING;
+        gameState = GameState.STARTING;
         //TODO Start the game
         updateSigns();
     }
@@ -131,7 +127,7 @@ public class Game implements Listener {
      * Stops the game
      */
     public void stop() {
-        state = State.DISABLED;
+        gameState = GameState.DISABLED;
         //TODO Stop the game
         updateSigns();
     }
@@ -167,7 +163,7 @@ public class Game implements Listener {
      * Enables the game
      */
     public void enable() {
-        state = State.WAITING;
+        gameState = GameState.WAITING;
         updateSigns();
     }
 
@@ -176,7 +172,7 @@ public class Game implements Listener {
      */
     public void disable() {
         //TODO kick all in game players
-        state = State.DISABLED;
+        gameState = GameState.DISABLED;
         updateSigns();
     }
 
@@ -185,7 +181,7 @@ public class Game implements Listener {
      */
     public void restart() {
         //TODO restart the game
-        state = State.RESTARTING;
+        gameState = GameState.RESTARTING;
         updateSigns();
     }
 
@@ -234,9 +230,9 @@ public class Game implements Listener {
         playerInvs.put(player.getUniqueId(), player.getInventory().getContents());
         playerArmor.put(player.getUniqueId(), player.getInventory().getArmorContents());
 
-        if (state != State.STARTING && players.size() >= GameManager.getMinimumPlayers())
+        if (gameState != GameState.STARTING && players.size() >= GameManager.getMinimumPlayers())
             start();
-        if (state == State.STARTING && time > 20 && ((double) maxPlayers * .75) <= players.size())
+        if (gameState == GameState.STARTING && time > 20 && ((double) maxPlayers * .75) <= players.size())
             countdown = 20;
 
         for (int i = 1; i <= maxPlayers; i++) {
@@ -352,8 +348,8 @@ public class Game implements Listener {
      *
      * @return State of the game
      */
-    public State getState() {
-        return this.state;
+    public GameState getGameState() {
+        return this.gameState;
     }
 
     /**
