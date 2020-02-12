@@ -1,12 +1,9 @@
-package me.travja.hungerarena.commands.modules;
-
-import java.util.ArrayList;
-import java.util.Arrays;
+package me.travja.hungerarena.commands.core;
 
 import me.travja.hungerarena.GameManager;
 import me.travja.hungerarena.Main;
-import me.travja.hungerarena.resources.Game;
 import me.travja.hungerarena.commands.CommandModule;
+import me.travja.hungerarena.resources.Game;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;

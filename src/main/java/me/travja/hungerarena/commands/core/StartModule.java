@@ -1,4 +1,4 @@
-package me.travja.hungerarena.commands.modules;
+package me.travja.hungerarena.commands.core;
 
 import me.travja.hungerarena.commands.CommandModule;
 import org.bukkit.command.Command;

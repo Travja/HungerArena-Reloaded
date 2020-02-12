@@ -1,8 +1,8 @@
 package me.travja.hungerarena.commands;
 
-import me.travja.hungerarena.Main;
-import me.travja.hungerarena.commands.modules.*;
-import org.bukkit.Bukkit;
+import me.travja.hungerarena.commands.core.*;
+import me.travja.hungerarena.commands.spawns.SpawnsModule;
+import me.travja.hungerarena.commands.sponsor.SponsorModule;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -14,41 +14,36 @@ import java.util.ArrayList;
 public class CommandHandler implements CommandExecutor {
 
     private ArrayList<CommandModule> modules = new ArrayList<>();
+    private static final String NO_PERM = ChatColor.RED + "You don't have permission for that!";
 
     public void init() {
-        CommandModule core = new CoreModule(null, "ha", "hungerarena.basic", ChatColor.RED + "You don't have permission for that!", "/<command> <start|create...>", "hungerarena");
+        CommandModule core = new CoreModule(null, "ha", "hungerarena.basic", NO_PERM, "/<command> <start|create...>", "hungerarena");
         modules.add(core);
-
-        SpawnsModule spawns = new SpawnsModule(null, "startpoint", "hungerarena.startpoint", ChatColor.RED + "You don't have permission for that!", "/<command> <name|cancel> [number]", "sp");
-        Bukkit.getServer().getPluginManager().registerEvents(spawns, Main.self);
-        modules.add(spawns);
+        modules.add(new SpawnsModule(null, "startpoint", "hungerarena.startpoint", NO_PERM, "/<command> <name|cancel> [number]", "sp").setRequirePlayer(true));
+        modules.add(new SponsorModule(null, "sponsor", "hungerarena.sponsor", NO_PERM, "/<command> <player> <item> [amount]"));
 
         addChildCommands(core);
     }
 
     private void addChildCommands(CommandModule core) {
-        new ArenaModule(core, "arena", "hungerarena.arena", ChatColor.RED + "You don't have permission for that!", "/<command> arena <create|delete> <name>", "a").setRequirePlayer(true);
-        new HelpModule(core, "help", "hungerarena.help", ChatColor.RED + "You don't have permission for that!", "/<command> help", "h");
-        new StartModule(core, "start", "hungerarena.start", ChatColor.RED + "You don't have permission for that!", "/<command> start <arena>", "s");
-        new JoinModule(core, "join", "hungerarena.join", ChatColor.RED + "You don't have permission for that!", "/<command> join [name]", "j").setRequirePlayer(true);
-        new LeaveModule(core, "leave", "hungerarena.join", ChatColor.RED + "You don't have permission for that!", "/<command> leave", "l").setRequirePlayer(true);
-        new RefillModule(core, "refill", "hungerarena.refill", ChatColor.RED + "You don't have permission for that!", "/<command> refill [name]", "r");
-        new KickModule(core, "kick", "hungerarena.kick", ChatColor.RED + "You don't have permission for that!", "/<command> kick <player>", "k");
-        new TPModule(core, "tp", "hungerarena.tp", ChatColor.RED + "You don't have permission for that!", "/<command> tp <player>", "teleport").setRequirePlayer(true);
-        new SetSpawnModule(core, "setspawn", "hungerarena.setspawn", ChatColor.RED + "You don't have permision for that!", "/<command> setspawn <name>", "ss").setRequirePlayer(true);
-
-        ListModule lcom = new ListModule(core, "list", "hungerarena.list", ChatColor.RED + "You don't have permission for that!", "/<command> list", "ls"); //TODO Allow these in Console v
-        Bukkit.getServer().getPluginManager().registerEvents(lcom, Main.self);
-
-        ManageModule mcom = new ManageModule(core, "manage", "hungerarena.manage", ChatColor.RED + "You don't have permission for that!", "/<command> manage", "man");
-        Bukkit.getServer().getPluginManager().registerEvents(mcom, Main.self);
+        new ArenaModule(core, "arena", "hungerarena.arena", NO_PERM, "/<command> arena <create|delete> <name>", "a").setRequirePlayer(true);
+        new HelpModule(core, "help", "hungerarena.help", NO_PERM, "/<command> help", "h");
+        new StartModule(core, "start", "hungerarena.start", NO_PERM, "/<command> start <arena>", "s");
+        new JoinModule(core, "join", "hungerarena.join", NO_PERM, "/<command> join [name]", "j").setRequirePlayer(true);
+        new LeaveModule(core, "leave", "hungerarena.join", NO_PERM, "/<command> leave", "l").setRequirePlayer(true);
+        new RefillModule(core, "refill", "hungerarena.refill", NO_PERM, "/<command> refill [name]", "r");
+        new KickModule(core, "kick", "hungerarena.kick", NO_PERM, "/<command> kick <player>", "k");
+        new TPModule(core, "tp", "hungerarena.tp", NO_PERM, "/<command> tp <player>", "teleport").setRequirePlayer(true);
+        new SetSpawnModule(core, "setspawn", "hungerarena.setspawn", NO_PERM, "/<command> setspawn <name>", "ss").setRequirePlayer(true);
+        new ListModule(core, "list", "hungerarena.list", NO_PERM, "/<command> list", "ls"); //TODO Allow these in Console v
+        new ManageModule(core, "manage", "hungerarena.manage", NO_PERM, "/<command> manage", "man");
     }
 
     public boolean exists(String name) {
-		for (CommandModule module : modules) {
-			if (module.getAliases().contains(name.toLowerCase()))
-				return true;
-		}
+        for (CommandModule module : modules) {
+            if (module.getAliases().contains(name.toLowerCase()))
+                return true;
+        }
 
         return false;
     }
@@ -72,14 +67,12 @@ public class CommandHandler implements CommandExecutor {
                 return true;
             }
 
-            boolean success = command.execute(sender, cmd, label, args);
             if (sender.hasPermission(command.getPermission())) {
+                boolean success = command.execute(sender, cmd, label, args);
                 if (!success)
                     sender.sendMessage(command.getUsage().replace("<command>", label));
             } else
                 sender.sendMessage(command.getPermissionMessage());
-
-
         }
         return true;
     }

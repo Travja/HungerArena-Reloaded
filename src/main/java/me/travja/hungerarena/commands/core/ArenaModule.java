@@ -1,4 +1,4 @@
-package me.travja.hungerarena.commands.modules;
+package me.travja.hungerarena.commands.core;
 
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;

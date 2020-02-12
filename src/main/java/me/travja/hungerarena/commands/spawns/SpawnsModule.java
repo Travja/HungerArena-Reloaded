@@ -1,14 +1,13 @@
-package me.travja.hungerarena.commands;
+package me.travja.hungerarena.commands.spawns;
 
 import me.travja.hungerarena.GameManager;
 import me.travja.hungerarena.Main;
+import me.travja.hungerarena.commands.CommandModule;
 import me.travja.hungerarena.resources.Game;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

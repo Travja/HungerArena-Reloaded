@@ -1,8 +1,10 @@
 package me.travja.hungerarena.commands;
 
+import me.travja.hungerarena.Main;
 import me.travja.hungerarena.utils.Chat;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.event.Listener;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -26,6 +28,8 @@ public abstract class CommandModule {
         setUsage(Chat.translate(usage));
         setAliases(alias);
         addAlias(name);
+        if(this instanceof Listener)
+            Main.self.getServer().getPluginManager().registerEvents((Listener) this, Main.self);
     }
 
     public void setParent(CommandModule parent) {
@@ -103,8 +107,9 @@ public abstract class CommandModule {
         }
     }
 
-    public void setAliases(HashSet<String> aliases) {
+    public CommandModule setAliases(HashSet<String> aliases) {
         this.aliases = aliases;
+        return this;
     }
 
     public void removeAlias(String alias) {
@@ -115,8 +120,9 @@ public abstract class CommandModule {
         return aliases;
     }
 
-    public void setRequirePlayer(boolean requirePlayer) {
+    public CommandModule setRequirePlayer(boolean requirePlayer) {
         this.requirePlayer = requirePlayer;
+        return this;
     }
 
     public boolean requirePlayer() {
