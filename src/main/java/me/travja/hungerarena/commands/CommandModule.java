@@ -52,6 +52,14 @@ public abstract class CommandModule {
         this.children.remove(child);
     }
 
+    public CommandModule getChild(String name) {
+        for (CommandModule child : children)
+            if (child.getAliases().contains(name.toLowerCase()))
+                return child;
+
+        return null;
+    }
+
     public String getName() {
         return name;
     }

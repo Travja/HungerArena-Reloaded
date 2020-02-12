@@ -43,18 +43,24 @@ public class HelpModule extends CommandModule {
         int page = 0;
         if (args.length >= 2)
             try {
-                page = Integer.parseInt(args[1]);
+                page = Integer.parseInt(args[1]) - 1;
             } catch (NumberFormatException e) {
             }
 
         int pages = (int) Math.ceil((double) list.size() / 8d);
+        if (page + 1 > pages) {
+            sender.sendMessage(ChatColor.RED + "There aren't that many pages silly!");
+            return true;
+        }
+        int end = 8 + 8 * page;
+        end = Math.min(end, list.size());
 
         sender.sendMessage(ChatColor.GREEN + "----HungerArena Help----");
-        for (int i = 8 * page; i < 8 + 8 * page; i++)
+        for (int i = 8 * page; i < end; i++)
             sender.sendMessage(list.get(i));
         sender.sendMessage(ChatColor.GREEN + "---------(" + (page + 1) + "/" + pages + ")---------");
         if (page + 1 < pages)
-            sender.sendMessage(ChatColor.GRAY + "/" + label + " help " + (page + 1) + " for next page");
+            sender.sendMessage(ChatColor.GRAY + "/" + label + " help " + (page + 2) + " for next page");
         return true;
     }
 
