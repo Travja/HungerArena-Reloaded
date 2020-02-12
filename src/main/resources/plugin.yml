@@ -1,5 +1,6 @@
 name: HungerArena
-main: me.Travja.HungerArena.Main
+main: me.travja.hungerarena.Main
+api-version: 1.15
 version: 2.0-Beta
 description: A lightweight and powerful plugin to help with playing The Hunger Games!
 depend: [WorldEdit]

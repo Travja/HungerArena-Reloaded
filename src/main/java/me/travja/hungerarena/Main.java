@@ -51,15 +51,15 @@ public class Main extends JavaPlugin {
 		log.info("HungerArena has been disabled!");
 	}
 
-	static CommandHandler handler;
+	private static CommandHandler handler;
 
 	private void registerCommands() {
 		handler = new CommandHandler();
 
 		handler.init();
 
-		getCommand("ha").setExecutor(handler);
-		getCommand("startpoint").setExecutor(handler);
+		getServer().getPluginCommand("ha").setExecutor(handler);
+		getServer().getPluginCommand("startpoint").setExecutor(handler);
 	}
 
 	public void title() {

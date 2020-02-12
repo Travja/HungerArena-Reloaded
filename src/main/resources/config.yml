@@ -2,7 +2,7 @@
 
 #config version for us devs. DONT CHANGE THIS, or it will screw up some things PRETTY badly.
 config:
-  version: 1.3
+  version: 2.0
 
 ######################################
 ######## Game Configuration ######### 
@@ -65,7 +65,7 @@ Explode_on_Move: 'false'
 Cannon_Death: 'true'
 
 # What item should be used to set spawns after /startpoint [arena#]
-spawnsTool: 286
+spawnsTool: GOLDEN_AXE
 
 ######################################
 ######################################
@@ -77,15 +77,15 @@ spawnsTool: 286
 
 # What the reward for winning is
 Reward:
-- 264,10
+- DIAMOND,10
 Sponsor_Cost:
-- 264,1
+- DIAMOND,1
 EntryFee:
   enabled: false
   eco: false
   cost: 50
   fee:
-  - 265,1
+  - IRON_INGOT,1
 # True means give money to winner, false means don't.
 rewardEco:
   enabled: false

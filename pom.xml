@@ -5,8 +5,8 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>me.travja.hungerarena</groupId>
-	<artifactId>HungerArena-Reloaded</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<artifactId>HungerArena</artifactId>
+	<version>2.0-SNAPSHOT</version>
 
 	<properties>
 		<maven.compiler.target>1.8</maven.compiler.target>
@@ -30,7 +30,6 @@
 			<groupId>org.bukkit</groupId>
 			<artifactId>bukkit</artifactId>
 			<version>1.15.2-R0.1-SNAPSHOT</version>
-<!--			<scope>provided</scope>-->
 		</dependency>
 		<dependency>
 			<groupId>org.spigotmc</groupId>
@@ -41,7 +40,6 @@
 			<groupId>com.sk89q.worldedit</groupId>
 			<artifactId>worldedit-bukkit</artifactId>
 			<version>7.1.0-SNAPSHOT</version>
-<!--			<scope>provided</scope>-->
 		</dependency>
 	</dependencies>
 
