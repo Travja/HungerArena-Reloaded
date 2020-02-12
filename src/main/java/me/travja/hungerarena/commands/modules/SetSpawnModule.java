@@ -9,9 +9,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
-public class SetSpawnCommand extends CommandModule {
+public class SetSpawnModule extends CommandModule {
 
-    public SetSpawnCommand(CommandModule parent, String name, String permission, String permissionMessage, String usage, String... alias) {
+    public SetSpawnModule(CommandModule parent, String name, String permission, String permissionMessage, String usage, String... alias) {
         super(parent, name, permission, permissionMessage, usage, alias);
     }
 

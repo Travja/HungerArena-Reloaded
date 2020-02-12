@@ -4,9 +4,9 @@ import me.travja.hungerarena.commands.CommandModule;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-public class StartCommand extends CommandModule {
+public class StartModule extends CommandModule {
 
-	public StartCommand(CommandModule parent, String name, String permission, String permissionMessage, String usage, String... alias) {
+	public StartModule(CommandModule parent, String name, String permission, String permissionMessage, String usage, String... alias) {
 		super(parent, name, permission, permissionMessage, usage, alias);
 	}
 

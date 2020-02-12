@@ -13,9 +13,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
-public class LeaveCommand extends CommandModule {
+public class LeaveModule extends CommandModule {
 
-	public LeaveCommand(CommandModule parent, String name, String permission, String permissionMessage, String usage, String... alias) {
+	public LeaveModule(CommandModule parent, String name, String permission, String permissionMessage, String usage, String... alias) {
 		super(parent, name, permission, permissionMessage, usage, alias);
 	}
 

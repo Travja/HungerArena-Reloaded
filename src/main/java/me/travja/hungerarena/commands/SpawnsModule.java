@@ -18,12 +18,12 @@ import org.bukkit.inventory.ItemStack;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class SpawnsCommand extends CommandModule implements Listener {
+public class SpawnsModule extends CommandModule implements Listener {
 
     private Material tool;
     private HashMap<UUID, Game> setters = new HashMap<>();
 
-    public SpawnsCommand(CommandModule parent, String name, String permission, String permissionMessage, String usage, String... alias) {
+    public SpawnsModule(CommandModule parent, String name, String permission, String permissionMessage, String usage, String... alias) {
         super(parent, name, permission, permissionMessage, usage, alias);
                 setRequirePlayer(true);
         tool = Material.matchMaterial(Main.config.getString("spawnsTool"));

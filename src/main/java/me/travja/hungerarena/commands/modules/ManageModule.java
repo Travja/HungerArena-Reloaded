@@ -15,11 +15,11 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-public class ManageCommand extends CommandModule implements Listener {
+public class ManageModule extends CommandModule implements Listener {
 
     private final String title = "§0[§c§lManage§0]";
 
-    public ManageCommand(CommandModule parent, String name, String permission, String permissionMessage, String usage, String... alias) {
+    public ManageModule(CommandModule parent, String name, String permission, String permissionMessage, String usage, String... alias) {
         super(parent, name, permission, permissionMessage, usage, alias);
     }
 

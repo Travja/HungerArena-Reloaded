@@ -1,7 +1,6 @@
 package me.travja.hungerarena.commands.modules;
 
 import me.travja.hungerarena.commands.CommandModule;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 

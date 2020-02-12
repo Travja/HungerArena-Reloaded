@@ -13,9 +13,12 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class KickCommand implements CommandModule {
+public class KickModule extends CommandModule {
 
-	@SuppressWarnings("deprecation")
+	public KickModule(CommandModule parent, String name, String permission, String permissionMessage, String usage, String... alias) {
+		super(parent, name, permission, permissionMessage, usage, alias);
+	}
+
 	@Override
 	public boolean execute(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		if(args.length==1)
@@ -30,41 +33,6 @@ public class KickCommand implements CommandModule {
 			}
 		}
 		return true;
-	}
-
-	@Override
-	public String getName() {
-		return "kick";
-	}
-
-	@Override
-	public ArrayList<String> getAliases() {
-		return new ArrayList<String>(Arrays.asList("k"));
-	}
-
-	@Override
-	public String getPermission() {
-		return "hungerarena.kick";
-	}
-
-	@Override
-	public String getPermissionMessage() {
-		return "§cYou don't have permission for that!";
-	}
-
-	@Override
-	public String getUsage() {
-		return "/ha kick [player]";
-	}
-
-	@Override
-	public CommandModule getParent() {
-		return Main.getCommandHandler().getExecutor("ha");
-	}
-	
-	@Override
-	public boolean isIndependent() {
-		return false;
 	}
 
 }
