@@ -4,6 +4,7 @@ import me.travja.hungerarena.Main;
 import me.travja.hungerarena.commands.CommandModule;
 import me.travja.hungerarena.game.Game;
 import me.travja.hungerarena.managers.GameManager;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -79,8 +80,10 @@ public class SpawnsModule extends CommandModule implements Listener {
                 l.add(0.5, 1, 0.5);
                 game.setSpawn(game.getMaxPlayers() + 1, l);
                 sendMessage(p, "&aSpawn point &3" + game.getMaxPlayers() + " &aset for &3" + game.getName());
-                if (game.getMaxPlayers() == GameManager.getMaximumPlayers())
+                if (game.getMaxPlayers() == GameManager.getMaximumPlayers()) {
                     setters.remove(p.getUniqueId());
+                    sendMessage(p, ChatColor.GREEN + "You've set all the spawns! No longer setting spawns.");
+                }
             }
         }
     }

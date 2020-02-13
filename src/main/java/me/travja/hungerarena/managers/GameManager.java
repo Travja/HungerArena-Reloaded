@@ -33,7 +33,7 @@ public class GameManager {
                 update();
                 updateGames();
             }
-        }.runTaskTimer(Main.self, 20L, 20L);
+        }.runTaskTimer(Main.self, 60L, 60L);
     }
 
     public static ArrayList<Game> getGames() {
@@ -173,7 +173,9 @@ public class GameManager {
                 refreshInventory(title);
 
 
-        for (Inventory menu : menus.values()) {
+        for (String title : menus.keySet()) {
+            Inventory menu = menus.get(title);
+            boolean manage = title.contains("Manage");
             ItemStack[] contents = menu.getContents();
             for (int i = 0; i < contents.length; i++) {
                 ItemStack item = contents[i];
@@ -181,13 +183,14 @@ public class GameManager {
                     ItemMeta im = item.getItemMeta();
                     String name = ChatColor.stripColor(im.getDisplayName().split(" ")[0]);
                     Game game = GameManager.getGame(name);
-                    menu.setItem(i, getDisplayItem(game));
+                    menu.setItem(i, getDisplayItem(game, manage));
                 }
             }
         }
     }
 
     public static Inventory getInventory(String title) {
+        refreshInventory(title);
         return menus.get(title);
     }
 
@@ -195,11 +198,13 @@ public class GameManager {
         int newSize = (int) Math.ceil((double) (GameManager.getGames().size() + 1) / 9) * 9;
         Inventory inv = menus.get(title);
         if (inv == null || inv.getSize() != newSize)
-            Bukkit.createInventory(null, newSize, title);
+            inv = Bukkit.createInventory(null, newSize, title);
+
+        boolean manage = title.contains("Manage");
 
         int i = 0;
-        for (Game game : GameManager.getGames()) {
-            inv.setItem(i, getDisplayItem(game));
+        for (Game game : getGames()) {
+            inv.setItem(i, getDisplayItem(game, manage));
             i++;
         }
         ItemStack exit = new ItemStack(Material.MAGMA_CREAM);
@@ -212,12 +217,11 @@ public class GameManager {
         return inv;
     }
 
-    private static ItemStack getDisplayItem(Game game) {
+    private static ItemStack getDisplayItem(Game game, boolean manage) {
         ItemStack item = new ItemStack(Material.GREEN_WOOL, game.getPlayers().size() > 0 ? game.getPlayers().size() : 1);
         String prefix;
         if (game.getGameState() == GameState.DISABLED ||
                 game.getGameState() == GameState.INGAME ||
-                game.getGameState() == GameState.STARTING ||
                 game.getPlayers().size() == game.getMaxPlayers()) {
             item.setType(Material.RED_WOOL);
             prefix = ChatColor.RED + "";
@@ -227,14 +231,21 @@ public class GameManager {
         } else if (game.getGameState() == GameState.RESTARTING) {
             item.setType(Material.ORANGE_WOOL);
             prefix = ChatColor.GOLD + "";
+        } else if (game.getGameState() == GameState.STARTING) {
+            item.setType(Material.YELLOW_WOOL);
+            prefix = ChatColor.YELLOW + "";
         } else {
             prefix = ChatColor.AQUA + "Unknown state ";
         }
 
         ItemMeta im = item.getItemMeta();
         im.setDisplayName(prefix + game.getName() + " - " + game.getGameState());
-        im.setLore(new ArrayList<>(Arrays.asList("§7Players: " + game.getPlayers().size() + "/" + game.getMaxPlayers(),
-                "§7Time: " + game.getTimeString(), "§8Right click to join or", "§8Left click to list players")));
+        if (!manage)
+            im.setLore(new ArrayList<>(Arrays.asList("§7Players: " + game.getPlayers().size() + "/" + game.getMaxPlayers(),
+                    "§7Time: " + game.getTimeString(), "§8Left click to join or", "§8Right click to list players")));
+        else
+            im.setLore(new ArrayList<>(Arrays.asList("§7Players: " + game.getPlayers().size() + "/" + game.getMaxPlayers(),
+                    "§7Time: " + game.getTimeString(), "§aLeft click to enable", "§cRight click to disable or", "§6Shift click to restart")));
         item.setItemMeta(im);
 
         return item;

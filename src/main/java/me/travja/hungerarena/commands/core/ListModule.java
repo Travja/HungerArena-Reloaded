@@ -1,8 +1,8 @@
 package me.travja.hungerarena.commands.core;
 
-import me.travja.hungerarena.managers.GameManager;
 import me.travja.hungerarena.commands.CommandModule;
 import me.travja.hungerarena.game.Game;
+import me.travja.hungerarena.managers.GameManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -25,7 +25,12 @@ public class ListModule extends CommandModule implements Listener {
 
     @Override
     public boolean execute(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-        ((Player) sender).openInventory(GameManager.getInventory(title));
+        if (sender instanceof Player)
+            ((Player) sender).openInventory(GameManager.getInventory(title));
+        else {
+            for (Game game : GameManager.getGames())
+                sender.sendMessage(game.getName() + " - " + game.getGameState().toString() + " - " + game.getPlayers().size() + "/" + game.getMaxPlayers());
+        }
         return true;
     }
 
@@ -42,11 +47,11 @@ public class ListModule extends CommandModule implements Listener {
                 p.closeInventory();
                 return;
             }
-            String gamename = ChatColor.stripColor(item.getItemMeta().getDisplayName().split(" ")[0]);
-            Game game = GameManager.getGame(gamename);
-            if (event.isRightClick()) {
+            String gameName = ChatColor.stripColor(item.getItemMeta().getDisplayName().split(" ")[0]);
+            Game game = GameManager.getGame(gameName);
+            if (event.isLeftClick()) {
                 p.performCommand("ha join " + game.getName());
-            } else if (event.isLeftClick()) {
+            } else if (event.isRightClick()) {
                 game.listPlayers(p);
             }
         }

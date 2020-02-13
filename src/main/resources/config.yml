@@ -24,6 +24,7 @@ broadcastAll: true
 
 # The max amount of players that can be in a game, This is also dependent on the amount of startpoints you have set.
 maxPlayers: 24
+minPlayers: 1 #2
 
 # Message to display when the games start
 Start_Message: '&bLet The Games Begin!'

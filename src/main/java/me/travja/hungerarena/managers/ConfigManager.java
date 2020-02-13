@@ -66,6 +66,7 @@ public class ConfigManager {
             if (defConfigStream != null) {
                 YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
                 data.get(arena).setDefaults(defConfig);
+                //data.get(arena).save(dataFiles.get(arena));
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();

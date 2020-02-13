@@ -1,8 +1,8 @@
 package me.travja.hungerarena.game;
 
+import me.travja.hungerarena.Main;
 import me.travja.hungerarena.managers.ConfigManager;
 import me.travja.hungerarena.managers.GameManager;
-import me.travja.hungerarena.Main;
 import me.travja.hungerarena.managers.MessageManager;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -30,12 +30,12 @@ public class Game implements Listener {
     private ArrayList<UUID> spectators;
     private HashMap<UUID, GameMode> specGMs;
     private HashMap<UUID, Location> specLocs;
-    private boolean global;
+    private static boolean global;
     private boolean grace;
     private int graceTime;
     private int time = 0;
-    private boolean countdownEnabled;
-    private int countdown;
+    private static boolean countdownEnabled;
+    private static int countdown;
 
     private Location min;
     private Location max;
@@ -84,29 +84,19 @@ public class Game implements Listener {
     }
 
     public Game(String name, Location min, Location max) {
-        this.name = name;
+        this(name);
+        setMin(min);
+        setMax(max);
+    }
+
+    public void setMin(Location min) {
         this.min = min;
-        this.max = max;
-        this.gameState = GameState.WAITING;
-        this.players = new ArrayList<>();
-        this.spectators = new ArrayList<>();
-        this.specLocs = new HashMap<>();
-        this.specGMs = new HashMap<>();
-        this.global = Main.config.getBoolean("broadcastAll");
-        this.grace = true;
         save();
-        load();
+    }
 
-        maxPlayers = spawns.size();
-
-        if (spawn == null)
-            spawn = min.getWorld().getSpawnLocation();
-
-        new BukkitRunnable() {
-            public void run() {
-                update();
-            }
-        }.runTaskTimer(Main.self, 20L, 20L);
+    public void setMax(Location max) {
+        this.max = max;
+        save();
     }
 
     public void setGameState(GameState gameState) {
@@ -118,7 +108,7 @@ public class Game implements Listener {
      * Starts the game
      */
     public void start() {
-        gameState = GameState.STARTING;
+        setGameState(GameState.STARTING);
         //TODO Start the game
         updateSigns();
     }
@@ -127,7 +117,7 @@ public class Game implements Listener {
      * Stops the game
      */
     public void stop() {
-        gameState = GameState.DISABLED;
+        setGameState(GameState.DISABLED);
         //TODO Stop the game
         updateSigns();
     }
@@ -163,7 +153,7 @@ public class Game implements Listener {
      * Enables the game
      */
     public void enable() {
-        gameState = GameState.WAITING;
+        setGameState(GameState.WAITING);
         updateSigns();
     }
 
@@ -172,7 +162,7 @@ public class Game implements Listener {
      */
     public void disable() {
         //TODO kick all in game players
-        gameState = GameState.DISABLED;
+        setGameState(GameState.DISABLED);
         updateSigns();
     }
 
@@ -181,7 +171,7 @@ public class Game implements Listener {
      */
     public void restart() {
         //TODO restart the game
-        gameState = GameState.RESTARTING;
+        setGameState(GameState.RESTARTING);
         updateSigns();
     }
 
@@ -267,6 +257,10 @@ public class Game implements Listener {
 
         player.teleport(spawn);
         sendMessage("&aThe tribute, &3" + player.getName() + " &ahas left!");
+        if(players.size() < GameManager.getMinimumPlayers()) {
+            restart();
+            setGameState(GameState.WAITING);
+        }
     }
 
     public int getNumber(Player player) {
@@ -413,7 +407,7 @@ public class Game implements Listener {
                 if (o instanceof ItemStack[]) {
                     items = (ItemStack[]) o;
                 } else if (o instanceof List) {
-                    items = (ItemStack[]) ((List<ItemStack>) o).toArray(new ItemStack[0]);
+                    items = ((List<ItemStack>) o).toArray(new ItemStack[0]);
                 }
                 chests.put(l, items);
             }
@@ -468,6 +462,9 @@ public class Game implements Listener {
 
     public Location getLocation(String string, boolean yaw) {
         Location l = new Location(null, 0, 0, 0);
+        if (string == null)
+            return null;
+
         String[] coords = string.split(",");
         l.setWorld(Bukkit.getWorld(coords[0]));
         l.setX(Double.valueOf(coords[1]));

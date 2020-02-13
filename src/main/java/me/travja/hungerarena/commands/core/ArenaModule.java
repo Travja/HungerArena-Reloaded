@@ -6,16 +6,15 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.world.World;
-import me.travja.hungerarena.managers.GameManager;
 import me.travja.hungerarena.Main;
 import me.travja.hungerarena.commands.CommandModule;
 import me.travja.hungerarena.game.Game;
+import me.travja.hungerarena.managers.GameManager;
 import me.travja.hungerarena.managers.MessageManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 public class ArenaModule extends CommandModule {
@@ -33,16 +32,18 @@ public class ArenaModule extends CommandModule {
             String action = args[1];
             String name = args[2];
 
-            if (action.equalsIgnoreCase("create")) {
-                if (GameManager.isGame(name)) {
-                    MessageManager.sendMessage(p, "&cA game with that name already exists!");
+            boolean redefine = action.equalsIgnoreCase("redefine");
+
+            if (action.equalsIgnoreCase("create") || redefine) {
+                if (GameManager.isGame(name) && !redefine) {
+                    MessageManager.sendMessage(p, "&cA game with that name already exists! Do you want to &7redefine&c that arena?");
                     return true;
                 }
 
                 WorldEditPlugin we = Main.we;
                 LocalSession session = we.getSession(p);
                 World world = session.getSelectionWorld();
-                if (!p.getWorld().getName().equals(world.getName())) {
+                if (world == null || !p.getWorld().getName().equals(world.getName())) {
                     MessageManager.sendMessage(p, ChatColor.RED + "Please make a selection in this world.");
                     return true;
                 }
@@ -54,10 +55,15 @@ public class ArenaModule extends CommandModule {
                         BlockVector3 maxB = selection.getMaximumPoint();
                         Location min = new Location(p.getWorld(), minB.getBlockX(), minB.getBlockY(), minB.getBlockZ());
                         Location max = new Location(p.getWorld(), maxB.getBlockX(), maxB.getBlockY(), maxB.getBlockZ());
-                        ;
-                        Game game = new Game(name, min, max);
-                        GameManager.addGame(game);
-                        MessageManager.sendMessage(p, "&aNew game called §3" + name + "§a created!");
+
+                        Game game = redefine ? GameManager.getGame(name) : new Game(name);
+                        game.setMin(min);
+                        game.setMax(max);
+                        if (!redefine) {
+                            GameManager.addGame(game);
+                            MessageManager.sendMessage(p, "&aNew game called §3" + name + "§a created!");
+                        } else
+                            MessageManager.sendMessage(p, ChatColor.DARK_AQUA + name + ChatColor.GREEN + " updated!");
                     } else
                         MessageManager.sendMessage(p, "&cPlease make a selection first!");
                 } catch (IncompleteRegionException e) {
