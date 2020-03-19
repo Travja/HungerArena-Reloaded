@@ -10,13 +10,103 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 public class ConfigManager {
+/*    private static HashMap<String, File> chestFiles = new HashMap<>();
+    private static HashMap<String, FileConfiguration> chests = new HashMap<>();
+
+    private static HashMap<String, File> dataFiles = new HashMap<>();
+    private static HashMap<String, FileConfiguration> data = new HashMap<>();
+
+    private static HashMap<UUID, File> pFiles = new HashMap<>();
+    private static HashMap<UUID, FileConfiguration> pConfigs = new HashMap<>();
+
     private static File optionsFile;
     public static FileConfiguration options;
 
     private static HashMap<String, File> spawnFiles = new HashMap<>();
-    private static HashMap<String, FileConfiguration> spawns = new HashMap<>();
+    private static HashMap<String, FileConfiguration> spawns = new HashMap<>();*/
 
-    public static void reloadSpawns(String arena) {
+
+    private static HashMap<String, File> files = new HashMap<>();
+    private static HashMap<String, FileConfiguration> confs = new HashMap<>();
+
+    public enum ConfigType {
+        SPAWNS,
+        PLAYER_DATA,
+        DATA,
+        CMDSBLOCKS,
+        CHESTS,
+        ARENA_DATA,
+        LANG
+    }
+
+    public static void reloadConfig(ConfigType type, String data) {
+        if (!files.containsKey(type.toString() + "-" + data))
+            files.put(type.toString() + "-" + data, new File(Main.self.getDataFolder() + (
+                    type == ConfigType.ARENA_DATA || type == ConfigType.PLAYER_DATA ||
+                            type == ConfigType.CHESTS || type == ConfigType.DATA || type == ConfigType.SPAWNS
+                            ? File.separator + data
+                            : ""
+            ), getFileName(type, data) + ".yml"));
+        loadDefaults(type, data);
+
+
+        confs.put(type.toString() + "-" + data, YamlConfiguration.loadConfiguration(files.get(type.toString() + "-" + data)));
+    }
+
+    private static void loadDefaults(ConfigType type, String data) {
+        try {
+            Reader defConfigStream = new InputStreamReader(Main.self.getResource(getFileName(type, data) + ".yml"), "UTF8");
+            if (defConfigStream != null) {
+                YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
+                confs.get(type.toString() + "-" + data).setDefaults(defConfig);
+            }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static FileConfiguration getConfig(ConfigType type, String data) {
+        if (!confs.containsKey(type.toString() + "-" + data))
+            reloadConfig(type, data);
+
+        return confs.get(type.toString() + "-" + data);
+    }
+
+    public static void saveConfig(ConfigType type, String data) {
+        if (!confs.containsKey(type.toString() + "-" + data) || !files.containsKey(type.toString() + "-" + data))
+            return;
+
+        try {
+            getConfig(type, data).save(files.get(type.toString() + "-" + data));
+        } catch (IOException ex) {
+            Main.log.log(Level.SEVERE, "Could not save config to " + files.get(type.toString() + "-" + data), ex);
+        }
+    }
+
+    public static String getFileName(ConfigType type, String data) {
+        String ret = "";
+
+        switch (type) {
+            case PLAYER_DATA:
+            case ARENA_DATA:
+                ret = data;
+                break;
+            case CMDSBLOCKS:
+            case CHESTS:
+            case SPAWNS:
+            case LANG:
+            case DATA:
+                ret = type.toString().toLowerCase();
+                break;
+            default:
+                ret = "Unknown";
+                break;
+        }
+
+        return ret;
+    }
+
+/*    public static void reloadSpawns(String arena) {
         if (!spawnFiles.containsKey(arena)) {
             spawnFiles.put(arena, new File(Main.self.getDataFolder() + File.separator + arena, "spawns.yml"));
         }
@@ -51,9 +141,6 @@ public class ConfigManager {
         }
     }
 
-
-    private static HashMap<String, File> dataFiles = new HashMap<>();
-    private static HashMap<String, FileConfiguration> data = new HashMap<>();
 
     public static void reloadData(String arena) {
         if (!dataFiles.containsKey(arena)) {
@@ -128,9 +215,6 @@ public class ConfigManager {
     }
 
 
-    private static HashMap<String, File> chestFiles = new HashMap<>();
-    private static HashMap<String, FileConfiguration> chests = new HashMap<>();
-
     public static void reloadChests(String arena) {
         if (!chestFiles.containsKey(arena)) {
             chestFiles.put(arena, new File(Main.self.getDataFolder() + File.separator + arena, "chests.yml"));
@@ -167,24 +251,21 @@ public class ConfigManager {
     }
 
 
-    private static HashMap<UUID, File> pFiles = new HashMap<>();
-    private static HashMap<UUID, FileConfiguration> pConfigs = new HashMap<>();
-
     public static void reloadPFile(UUID uuid) {
         if (!pFiles.containsKey(uuid)) {
             pFiles.put(uuid, new File(Main.self.getDataFolder() + File.separator + "players", uuid.toString() + ".yml"));
         }
         pConfigs.put(uuid, YamlConfiguration.loadConfiguration(pFiles.get(uuid)));
 
-        try {
-            Reader defConfigStream = new InputStreamReader(Main.self.getResource(uuid.toString() + ".yml"), "UTF8");
-            if (defConfigStream != null) {
-                YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
-                pConfigs.get(uuid).setDefaults(defConfig);
-            }
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Reader defConfigStream = new InputStreamReader(Main.self.getResource(uuid.toString() + ".yml"), "UTF8");
+//            if (defConfigStream != null) {
+//                YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
+//                pConfigs.get(uuid).setDefaults(defConfig);
+//            }
+//        } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();
+//        }
     }
 
     public static FileConfiguration getPConfig(UUID uuid) {
@@ -202,5 +283,5 @@ public class ConfigManager {
         } catch (IOException ex) {
             Main.log.log(Level.SEVERE, "Could not save config to " + pFiles.get(uuid), ex);
         }
-    }
+    }*/
 }

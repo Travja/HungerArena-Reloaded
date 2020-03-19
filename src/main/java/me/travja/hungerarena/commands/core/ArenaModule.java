@@ -25,8 +25,9 @@ public class ArenaModule extends CommandModule {
 
     @Override
     public boolean execute(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-        if (args.length == 1)
+        if (args.length < 3)
             return false;
+
         if (args.length >= 3) {
             Player p = (Player) sender;
             String action = args[1];
@@ -50,36 +51,52 @@ public class ArenaModule extends CommandModule {
                 try {
                     Region selection = session.getSelection(world);
 
-                    if (selection != null) {
-                        BlockVector3 minB = selection.getMinimumPoint();
-                        BlockVector3 maxB = selection.getMaximumPoint();
-                        Location min = new Location(p.getWorld(), minB.getBlockX(), minB.getBlockY(), minB.getBlockZ());
-                        Location max = new Location(p.getWorld(), maxB.getBlockX(), maxB.getBlockY(), maxB.getBlockZ());
-
-                        Game game = redefine ? GameManager.getGame(name) : new Game(name);
-                        game.setMin(min);
-                        game.setMax(max);
-                        if (!redefine) {
-                            GameManager.addGame(game);
-                            MessageManager.sendMessage(p, "&aNew game called §3" + name + "§a created!");
-                        } else
-                            MessageManager.sendMessage(p, ChatColor.DARK_AQUA + name + ChatColor.GREEN + " updated!");
-                    } else
+                    if (selection == null) {
                         MessageManager.sendMessage(p, "&cPlease make a selection first!");
+                        return true;
+                    }
+
+                    BlockVector3 minB = selection.getMinimumPoint();
+                    BlockVector3 maxB = selection.getMaximumPoint();
+                    Location min = new Location(p.getWorld(), minB.getBlockX(), minB.getBlockY(), minB.getBlockZ());
+                    Location max = new Location(p.getWorld(), maxB.getBlockX(), maxB.getBlockY(), maxB.getBlockZ());
+
+                    Game game = redefine ? GameManager.getGame(name) : new Game(name);
+                    game.setMin(min);
+                    game.setMax(max);
+                    if (!redefine) {
+                        GameManager.addGame(game);
+                        MessageManager.sendMessage(p, "&aNew game called §3" + name + "§a created!");
+                    } else
+                        MessageManager.sendMessage(p, ChatColor.DARK_AQUA + name + ChatColor.GREEN + " updated!");
+
                 } catch (IncompleteRegionException e) {
                     MessageManager.sendMessage(p, "&cPlease make a selection first!");
                 }
             } else if (action.equalsIgnoreCase("delete")) {
+
+
                 if (GameManager.isGame(name)) {
                     Game game = GameManager.getGame(name);
                     game.delete();
                     GameManager.removeGame(game);
                     MessageManager.sendMessage(p, name + "&a deleted!");
-                } else {
+                } else
                     MessageManager.sendMessage(p, "&cA game with that name could not be found!");
-                }
-            }
 
+
+            } else if (action.equalsIgnoreCase("setlobby")) {
+
+
+                if (GameManager.isGame(name)) {
+                    Game game = GameManager.getGame(name);
+                    game.setLobby(p.getLocation());
+                    MessageManager.sendMessage(p, "&aLobby set for &7" + name + ".");
+                } else
+                    MessageManager.sendMessage(p, "&cA game with that name could not be found!");
+
+
+            }
 
         }
         return true;

@@ -1,90 +1,93 @@
 package me.travja.hungerarena;
 
-import java.io.File;
-import java.util.logging.Logger;
-
-import me.travja.hungerarena.game.Game;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import me.travja.hungerarena.commands.CommandHandler;
+import me.travja.hungerarena.game.Game;
 import me.travja.hungerarena.listeners.MovementListener;
 import me.travja.hungerarena.listeners.PvP;
-
+import me.travja.hungerarena.managers.ConfigManager;
 import me.travja.hungerarena.managers.GameManager;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import java.io.File;
+import java.util.logging.Logger;
 
 public class Main extends JavaPlugin {
 
-	public static FileConfiguration config;
-	public static Logger log;
-	public static Main self;
+    public static FileConfiguration config;
+    public static Logger log;
+    public static Main self;
 
-	public static WorldEditPlugin we;
+    public static WorldEditPlugin we;
 
-	public void onEnable(){
-		title();
-		self = this;
-		config = this.getConfig();
-		config.options().copyDefaults(true);
-		if(!new File(this.getDataFolder(), "config.yml").exists())
-			this.saveDefaultConfig();
+    public void onEnable() {
+        title();
+        self = this;
+        config = this.getConfig();
+        config.options().copyDefaults(true);
+        if (!new File(this.getDataFolder(), "config.yml").exists())
+            this.saveDefaultConfig();
 
-		log = this.getLogger();
+        ConfigManager.reloadConfig(ConfigManager.ConfigType.LANG, null);
+        ConfigManager.reloadConfig(ConfigManager.ConfigType.CMDSBLOCKS, null);
 
-		this.getServer().getPluginManager().registerEvents(new PvP(), this);
-		this.getServer().getPluginManager().registerEvents(new MovementListener(), this);
+        log = this.getLogger();
 
-		we = (WorldEditPlugin) getServer().getPluginManager().getPlugin("WorldEdit");
+        this.getServer().getPluginManager().registerEvents(new PvP(), this);
+        this.getServer().getPluginManager().registerEvents(new MovementListener(), this);
 
-		load();
+        we = (WorldEditPlugin) getServer().getPluginManager().getPlugin("WorldEdit");
 
-		GameManager.init();
+        load();
 
-		registerCommands();
+        GameManager.init();
 
-		log.info("HungerArena has been enabled!");		
-	}
-	public void onDisable(){
+        registerCommands();
 
-		log.info("HungerArena has been disabled!");
-	}
+        log.info("HungerArena has been enabled!");
+    }
 
-	private static CommandHandler handler;
+    public void onDisable() {
 
-	private void registerCommands() {
-		handler = new CommandHandler();
+        log.info("HungerArena has been disabled!");
+    }
 
-		handler.init();
+    private static CommandHandler handler;
 
-		getServer().getPluginCommand("ha").setExecutor(handler);
-		getServer().getPluginCommand("startpoint").setExecutor(handler);
-	}
+    private void registerCommands() {
+        handler = new CommandHandler();
 
-	public void title() {
-		String spaces = "         ";
-		String spaces2 = "            ";
-		System.out.println(spaces+" _   _ _   _ _   _ _____  ___________");
-		System.out.println(spaces+"| | | | | | | \\ | |  __ \\|  ___| ___ \\");
-		System.out.println(spaces+"| |_| | | | |  \\| | |  \\/| |__ | |_/ /");
-		System.out.println(spaces+"|  _  | | | | . ` | | __ |  __||    /");
-		System.out.println(spaces+"| | | | |_| | |\\  | |_\\ \\| |___| |\\ \\");
-		System.out.println(spaces+"\\_| |_/\\___/\\_| \\_/\\____/\\____/\\_| \\_\\");
-		System.out.println(spaces2+"  ___  ______ _____ _   _   ___");
-		System.out.println(spaces2+" / _ \\ | ___ \\  ___| \\ | | / _ \\ ");
-		System.out.println(spaces2+"/ /_\\ \\| |_/ / |__ |  \\| |/ /_\\ \\");
-		System.out.println(spaces2+"|  _  ||    /|  __|| . ` ||  _  |");
-		System.out.println(spaces2+"| | | || |\\ \\| |___| |\\  || | | |");
-		System.out.println(spaces2+"\\_| |_/\\_| \\_\\____/\\_| \\_/\\_| |_/");
-	}
+        handler.init();
 
-	public static CommandHandler getCommandHandler() { 
-		return handler;
-	}
+        getServer().getPluginCommand("ha").setExecutor(handler);
+        getServer().getPluginCommand("startpoint").setExecutor(handler);
+    }
 
-	private void load(){
-		for(File file: this.getDataFolder().listFiles())
-			if(file.isDirectory() && !file.getName().equals("Players"))
-				GameManager.addGame(new Game(file.getName()));
-	}
+    public void title() {
+        String spaces = "         ";
+        String spaces2 = "            ";
+        System.out.println(spaces + " _   _ _   _ _   _ _____  ___________");
+        System.out.println(spaces + "| | | | | | | \\ | |  __ \\|  ___| ___ \\");
+        System.out.println(spaces + "| |_| | | | |  \\| | |  \\/| |__ | |_/ /");
+        System.out.println(spaces + "|  _  | | | | . ` | | __ |  __||    /");
+        System.out.println(spaces + "| | | | |_| | |\\  | |_\\ \\| |___| |\\ \\");
+        System.out.println(spaces + "\\_| |_/\\___/\\_| \\_/\\____/\\____/\\_| \\_\\");
+        System.out.println(spaces2 + "  ___  ______ _____ _   _   ___");
+        System.out.println(spaces2 + " / _ \\ | ___ \\  ___| \\ | | / _ \\ ");
+        System.out.println(spaces2 + "/ /_\\ \\| |_/ / |__ |  \\| |/ /_\\ \\");
+        System.out.println(spaces2 + "|  _  ||    /|  __|| . ` ||  _  |");
+        System.out.println(spaces2 + "| | | || |\\ \\| |___| |\\  || | | |");
+        System.out.println(spaces2 + "\\_| |_/\\_| \\_\\____/\\_| \\_/\\_| |_/");
+    }
+
+    public static CommandHandler getCommandHandler() {
+        return handler;
+    }
+
+    private void load() {
+        for (File file : this.getDataFolder().listFiles())
+            if (file.isDirectory() && !file.getName().equals("Players"))
+                GameManager.addGame(new Game(file.getName()));
+    }
 }

@@ -3,6 +3,7 @@ package me.travja.hungerarena.commands;
 import me.travja.hungerarena.commands.core.*;
 import me.travja.hungerarena.commands.spawns.SpawnsModule;
 import me.travja.hungerarena.commands.sponsor.SponsorModule;
+import me.travja.hungerarena.utils.Locale;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -16,7 +17,7 @@ import static me.travja.hungerarena.managers.MessageManager.sendMessage;
 public class CommandHandler implements CommandExecutor {
 
     private ArrayList<CommandModule> modules = new ArrayList<>();
-    private static final String NO_PERM = ChatColor.RED + "You don't have permission for that!";
+    private static final String NO_PERM = Locale.getMessage(Locale.Permission.NO_PERM);
 
     public void init() {
         CommandModule core = new CoreModule(null, "ha", "hungerarena.basic", NO_PERM, ChatColor.RED + "Unknown subcommand. Type /<command> help for help!", "hungerarena");

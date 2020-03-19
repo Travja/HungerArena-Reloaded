@@ -4,6 +4,7 @@ import me.travja.hungerarena.Main;
 import me.travja.hungerarena.managers.ConfigManager;
 import me.travja.hungerarena.managers.GameManager;
 import me.travja.hungerarena.managers.MessageManager;
+import me.travja.hungerarena.utils.LocationUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
@@ -21,6 +22,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.io.File;
 import java.util.*;
 import java.util.Map.Entry;
+
+import static me.travja.hungerarena.utils.LocationUtils.*;
 
 public class Game implements Listener {
 
@@ -50,6 +53,7 @@ public class Game implements Listener {
     private HashMap<UUID, ItemStack[]> playerArmor = new HashMap<>();
 
     private HashMap<Integer, Location> spawns = new HashMap<>();
+    private Location lobbyLoc;
 
     private int maxPlayers;
 
@@ -99,6 +103,15 @@ public class Game implements Listener {
         save();
     }
 
+    public void setLobby(Location lobby) {
+        this.lobbyLoc = lobby;
+        save();
+    }
+
+    public Location getLobbyLoc() {
+        return this.lobbyLoc;
+    }
+
     public void setGameState(GameState gameState) {
         this.gameState = gameState;
         updateSigns();
@@ -109,8 +122,16 @@ public class Game implements Listener {
      */
     public void start() {
         setGameState(GameState.STARTING);
-        //TODO Start the game
         updateSigns();
+        //TODO Start the game
+
+        for(UUID id : players) {
+            Player player = Bukkit.getPlayer(id);
+
+            //TODO TP To startpoint.
+
+        }
+
     }
 
     /**
@@ -214,7 +235,7 @@ public class Game implements Listener {
      * @param player to add to the game
      */
     public void addPlayer(Player player) {
-        //TODO teleport player to game lobby
+        //TODO teleport player to game lobby INSTEAD OF startpoint
         sendMessage(Main.self + player.getName() + " &ajoined! &7" + (players.size() + 1) + "/" + maxPlayers);
         players.add(player.getUniqueId());
         playerInvs.put(player.getUniqueId(), player.getInventory().getContents());
@@ -392,10 +413,11 @@ public class Game implements Listener {
 
     @SuppressWarnings("unchecked")
     private void load() {
-        config = ConfigManager.getData(name);
-        chestConfig = ConfigManager.getChests(name);
+        config = ConfigManager.getConfig(ConfigManager.ConfigType.DATA, name);
+        chestConfig = ConfigManager.getConfig(ConfigManager.ConfigType.CHESTS, name);
         min = getLocation(config.getString("Arena.min"), false);
         max = getLocation(config.getString("Arena.max"), false);
+        lobbyLoc = getLocation(config.getString("lobby"), true);
 
         //load chests
         if (chestConfig.getConfigurationSection("Chests") != null) {
@@ -434,14 +456,16 @@ public class Game implements Listener {
     }
 
     private void save() {
-        config = ConfigManager.getData(name);
-        chestConfig = ConfigManager.getChests(name);
+        config = ConfigManager.getConfig(ConfigManager.ConfigType.DATA, name);
+        chestConfig = ConfigManager.getConfig(ConfigManager.ConfigType.CHESTS, name);
 
 
         if (min != null && max != null) {
             config.set("Arena.min", locToString(min, false));
             config.set("Arena.max", locToString(max, false));
         }
+        if(lobbyLoc != null)
+            config.set("lobby", locToString(lobbyLoc, true));
 
         if (spawn != null)
             config.set("Arena.spawn", locToString(spawn, true));
@@ -451,43 +475,13 @@ public class Game implements Listener {
                 config.set("Spawns." + i, locToString(spawns.get(i), true));
 
 
-        ConfigManager.saveData(name);
-        ConfigManager.saveChests(name);
+        ConfigManager.saveConfig(ConfigManager.ConfigType.DATA, name);
+        ConfigManager.saveConfig(ConfigManager.ConfigType.CHESTS, name);
         //TODO save data
     }
 
     public void updateSigns() {
         //TODO update signs
-    }
-
-    public Location getLocation(String string, boolean yaw) {
-        Location l = new Location(null, 0, 0, 0);
-        if (string == null)
-            return null;
-
-        String[] coords = string.split(",");
-        l.setWorld(Bukkit.getWorld(coords[0]));
-        l.setX(Double.valueOf(coords[1]));
-        l.setY(Double.valueOf(coords[2]));
-        l.setZ(Double.valueOf(coords[3]));
-        if (yaw) {
-            l.setPitch(Float.valueOf(coords[4]));
-            l.setYaw(Float.valueOf(coords[5]));
-        }
-        return l;
-    }
-
-    public String locToString(Location l, boolean yaw) {
-        String coords = "";
-        coords += l.getWorld().getName();
-        coords += "," + l.getX();
-        coords += "," + l.getY();
-        coords += "," + l.getZ();
-        if (yaw) {
-            coords += "," + l.getPitch();
-            coords += "," + l.getYaw();
-        }
-        return coords;
     }
 
     public void delete() {
